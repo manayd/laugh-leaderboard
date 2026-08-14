@@ -1,6 +1,7 @@
 # iMessage Laugh Board
 
-See who gets the most **Haha** reacts in an iMessage group chat — on your Mac only.
+Rank **Haha, Heart, Thumbs Up, and Thumbs Down** reactions in an iMessage
+group chat — on your Mac only.
 
 Nothing is uploaded. Your messages never leave your computer.
 
@@ -8,8 +9,8 @@ Nothing is uploaded. Your messages never leave your computer.
 
 After one Terminal command, a local webpage shows:
 
-- **Rankings** (received / given / per message / per 1k characters)
-- **Who → Whom** matrix
+- **Reaction rankings** (received / given / per message / per 1k characters)
+- **Who → Whom** matrices for Haha, Heart, Thumbs Up, and Thumbs Down
 - **Bar race** over time
 - **When hours** heatmap (Eastern Time)
 - **Funniest** messages (Hall of Fame + setup thread)
@@ -63,6 +64,10 @@ Or double-click **index.html** in Finder.
 
 Drop **laugh-data.json** onto the page.
 
+The page will show every phone number/email it found. Type the matching
+name beside each one, then click **View my board**. The names are applied
+locally across rankings, the matrix, bar race, Hall of Fame, and clips.
+
 > Tip: to try the UI with fake data first, drop **sample-data.json**, or run `python3 -m http.server 8765` in this folder and open `http://localhost:8765` (the Sample button works that way).
 
 ## Privacy
@@ -99,5 +104,5 @@ python3 export_laughs.py --chat-id 42
 
 ## Notes
 
-- Haha tapbacks are `associated_message_type = 2003` in Apple’s Messages database
+- Tapback types: Heart `2000`, Thumbs Up `2001`, Thumbs Down `2002`, Haha `2003`
 - Only use this on chats where everyone is comfortable with the analysis

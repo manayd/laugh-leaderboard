@@ -21,7 +21,14 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-LAUGH_TYPE = 2003
+REACTION_TYPES = {
+    "heart": 2000,
+    "thumbs_up": 2001,
+    "thumbs_down": 2002,
+    "haha": 2003,
+}
+REACTION_KIND_BY_TYPE = {value: key for key, value in REACTION_TYPES.items()}
+LAUGH_TYPE = REACTION_TYPES["haha"]
 APPLE_EPOCH = datetime(2001, 1, 1, tzinfo=timezone.utc)
 MESSAGES_DB = Path.home() / "Library" / "Messages" / "chat.db"
 DEFAULT_COPY = Path("/tmp/imessage-laughs-chat-copy.db")
@@ -118,11 +125,8 @@ def display_person(handle: str | None, is_from_me: bool, names: dict[str, str]) 
             nd = re.sub(r"\D", "", nk)
             if nd.endswith(tail):
                 return nv
-    # Prefer a short readable label for emails/phones
-    if "@" in handle:
-        return handle.split("@")[0]
-    if digits:
-        return f"…{digits[-4:]}"
+    # Keep the full handle so the local UI can map each phone/email to a name.
+    # This data never leaves the user's machine unless they share the export.
     return handle
 
 
@@ -234,6 +238,27 @@ def finalize_people(stats: dict[str, dict], people_order: list[str]) -> list[dic
     return out
 
 
+def finalize_reaction_people(stats: dict[str, dict], people_order: list[str]) -> list[dict]:
+    out = []
+    for p in people_order:
+        s = stats[p]
+        sent = s["messages_sent"]
+        chars = s["characters_sent"]
+        received = s["reactions_received"]
+        out.append(
+            {
+                "person": p,
+                "messages_sent": sent,
+                "characters_sent": chars,
+                "reactions_given": s["reactions_given"],
+                "reactions_received": received,
+                "reactions_per_message": round(received / sent, 4) if sent else 0.0,
+                "reactions_per_1k_chars": round(1000.0 * received / chars, 4) if chars else 0.0,
+            }
+        )
+    return out
+
+
 def build_clip_block(people_order: list[str], clips_sent: dict, laughs_on: dict) -> dict:
     rows = []
     for p in people_order:
@@ -272,7 +297,9 @@ def analyze(conn: sqlite3.Connection, chat_ids: list[int], chat_name: str, names
 
     by_guid: dict[str, sqlite3.Row] = {}
     normal: list[tuple[sqlite3.Row, str, datetime | None]] = []
-    laughs: list[tuple[sqlite3.Row, str, datetime | None, sqlite3.Row | None, str | None]] = []
+    reactions: dict[str, list[tuple[sqlite3.Row, str, datetime | None, sqlite3.Row | None, str | None]]] = {
+        kind: [] for kind in REACTION_TYPES
+    }
 
     for r in uniq:
         person = display_person(r["handle"], bool(r["is_from_me"]), names)
@@ -283,7 +310,10 @@ def analyze(conn: sqlite3.Connection, chat_ids: list[int], chat_name: str, names
             normal.append((r, person, dt))
 
     for r in uniq:
-        if r["associated_message_type"] is None or int(r["associated_message_type"]) != LAUGH_TYPE:
+        if r["associated_message_type"] is None:
+            continue
+        kind = REACTION_KIND_BY_TYPE.get(int(r["associated_message_type"]))
+        if kind is None:
             continue
         reactor = display_person(r["handle"], bool(r["is_from_me"]), names)
         dt = apple_to_dt(r["date"])
@@ -298,15 +328,18 @@ def analyze(conn: sqlite3.Connection, chat_ids: list[int], chat_name: str, names
         receiver = None
         if target is not None:
             receiver = display_person(target["handle"], bool(target["is_from_me"]), names)
-        laughs.append((r, reactor, dt, target, receiver))
+        reactions[kind].append((r, reactor, dt, target, receiver))
+
+    laughs = reactions["haha"]
 
     people_set: set[str] = set()
     for _, person, _ in normal:
         people_set.add(person)
-    for _, reactor, _, _, receiver in laughs:
-        people_set.add(reactor)
-        if receiver:
-            people_set.add(receiver)
+    for items in reactions.values():
+        for _, reactor, _, _, receiver in items:
+            people_set.add(reactor)
+            if receiver:
+                people_set.add(receiver)
     people_order = sorted(people_set, key=lambda p: (p.lower() != "me", p.lower()))
 
     now = datetime.now(timezone.utc)
@@ -365,6 +398,33 @@ def analyze(conn: sqlite3.Connection, chat_ids: list[int], chat_name: str, names
                 for k in kinds:
                     clips_sent[k][person] += 1
                 clips_sent["combined"][person] += 1
+
+        reaction_blocks = {}
+        for kind, items in reactions.items():
+            reaction_stats = {
+                p: {
+                    "messages_sent": stats[p]["messages_sent"],
+                    "characters_sent": stats[p]["characters_sent"],
+                    "reactions_given": 0,
+                    "reactions_received": 0,
+                }
+                for p in people_order
+            }
+            reaction_matrix = [[0 for _ in people_order] for _ in people_order]
+            for _, reactor, dt, target, receiver in items:
+                if not in_window(dt, wstart, wend):
+                    continue
+                reaction_stats[reactor]["reactions_given"] += 1
+                if target is None or receiver is None:
+                    continue
+                reaction_stats[receiver]["reactions_received"] += 1
+                reaction_matrix[idx[reactor]][idx[receiver]] += 1
+            reaction_people = finalize_reaction_people(reaction_stats, people_order)
+            reaction_blocks[kind] = {
+                "total_reactions": sum(row["reactions_given"] for row in reaction_people),
+                "people": reaction_people,
+                "matrix": reaction_matrix,
+            }
 
         for r, reactor, dt, target, receiver in laughs:
             if not in_window(dt, wstart, wend):
@@ -466,7 +526,12 @@ def analyze(conn: sqlite3.Connection, chat_ids: list[int], chat_name: str, names
         ]
 
         dated = [dt for _, _, dt in normal if in_window(dt, wstart, wend) and dt]
-        dated += [dt for _, _, dt, _, _ in laughs if in_window(dt, wstart, wend) and dt]
+        dated += [
+            dt
+            for items in reactions.values()
+            for _, _, dt, _, _ in items
+            if in_window(dt, wstart, wend) and dt
+        ]
         w_from = min(dated).isoformat() if dated else None
         w_to = max(dated).isoformat() if dated else None
 
@@ -479,6 +544,7 @@ def analyze(conn: sqlite3.Connection, chat_ids: list[int], chat_name: str, names
             "total_laughs": sum(s["laughs_given"] for s in stats.values()),
             "people": people_rows,
             "matrix": matrix,
+            "reactions": reaction_blocks,
             "heatmap": heat,
             "funniest": funniest,
             "clips": {

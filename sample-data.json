@@ -751,6 +751,356 @@
             "date": "2025-05-10T20:00:00+00:00"
           }
         ]
+      },
+      "reactions": {
+        "haha": {
+          "total_reactions": 385,
+          "people": [
+            {
+              "person": "alex",
+              "messages_sent": 400,
+              "characters_sent": 9000,
+              "reactions_given": 84,
+              "reactions_received": 75,
+              "reactions_per_message": 0.1875,
+              "reactions_per_1k_chars": 8.3333
+            },
+            {
+              "person": "blake",
+              "messages_sent": 350,
+              "characters_sent": 8000,
+              "reactions_given": 73,
+              "reactions_received": 101,
+              "reactions_per_message": 0.2886,
+              "reactions_per_1k_chars": 12.625
+            },
+            {
+              "person": "casey",
+              "messages_sent": 500,
+              "characters_sent": 12000,
+              "reactions_given": 104,
+              "reactions_received": 85,
+              "reactions_per_message": 0.17,
+              "reactions_per_1k_chars": 7.0833
+            },
+            {
+              "person": "drew",
+              "messages_sent": 220,
+              "characters_sent": 5000,
+              "reactions_given": 45,
+              "reactions_received": 52,
+              "reactions_per_message": 0.2364,
+              "reactions_per_1k_chars": 10.4
+            },
+            {
+              "person": "eden",
+              "messages_sent": 380,
+              "characters_sent": 9500,
+              "reactions_given": 79,
+              "reactions_received": 72,
+              "reactions_per_message": 0.1895,
+              "reactions_per_1k_chars": 7.5789
+            }
+          ],
+          "matrix": [
+            [
+              2,
+              40,
+              12,
+              8,
+              22
+            ],
+            [
+              18,
+              1,
+              30,
+              10,
+              14
+            ],
+            [
+              25,
+              33,
+              0,
+              19,
+              27
+            ],
+            [
+              9,
+              11,
+              15,
+              3,
+              7
+            ],
+            [
+              21,
+              16,
+              28,
+              12,
+              2
+            ]
+          ]
+        },
+        "heart": {
+          "total_reactions": 214,
+          "people": [
+            {
+              "person": "alex",
+              "messages_sent": 400,
+              "characters_sent": 9000,
+              "reactions_given": 46,
+              "reactions_received": 43,
+              "reactions_per_message": 0.1075,
+              "reactions_per_1k_chars": 4.7778
+            },
+            {
+              "person": "blake",
+              "messages_sent": 350,
+              "characters_sent": 8000,
+              "reactions_given": 41,
+              "reactions_received": 56,
+              "reactions_per_message": 0.16,
+              "reactions_per_1k_chars": 7.0
+            },
+            {
+              "person": "casey",
+              "messages_sent": 500,
+              "characters_sent": 12000,
+              "reactions_given": 59,
+              "reactions_received": 46,
+              "reactions_per_message": 0.092,
+              "reactions_per_1k_chars": 3.8333
+            },
+            {
+              "person": "drew",
+              "messages_sent": 220,
+              "characters_sent": 5000,
+              "reactions_given": 24,
+              "reactions_received": 30,
+              "reactions_per_message": 0.1364,
+              "reactions_per_1k_chars": 6.0
+            },
+            {
+              "person": "eden",
+              "messages_sent": 380,
+              "characters_sent": 9500,
+              "reactions_given": 44,
+              "reactions_received": 40,
+              "reactions_per_message": 0.1053,
+              "reactions_per_1k_chars": 4.2105
+            }
+          ],
+          "matrix": [
+            [
+              2,
+              22,
+              6,
+              5,
+              12
+            ],
+            [
+              9,
+              0,
+              17,
+              5,
+              7
+            ],
+            [
+              13,
+              19,
+              0,
+              10,
+              15
+            ],
+            [
+              5,
+              6,
+              8,
+              2,
+              3
+            ],
+            [
+              11,
+              8,
+              16,
+              6,
+              1
+            ]
+          ]
+        },
+        "thumbs_up": {
+          "total_reactions": 311,
+          "people": [
+            {
+              "person": "alex",
+              "messages_sent": 400,
+              "characters_sent": 9000,
+              "reactions_given": 67,
+              "reactions_received": 62,
+              "reactions_per_message": 0.155,
+              "reactions_per_1k_chars": 6.8889
+            },
+            {
+              "person": "blake",
+              "messages_sent": 350,
+              "characters_sent": 8000,
+              "reactions_given": 59,
+              "reactions_received": 81,
+              "reactions_per_message": 0.2314,
+              "reactions_per_1k_chars": 10.125
+            },
+            {
+              "person": "casey",
+              "messages_sent": 500,
+              "characters_sent": 12000,
+              "reactions_given": 85,
+              "reactions_received": 68,
+              "reactions_per_message": 0.136,
+              "reactions_per_1k_chars": 5.6667
+            },
+            {
+              "person": "drew",
+              "messages_sent": 220,
+              "characters_sent": 5000,
+              "reactions_given": 36,
+              "reactions_received": 43,
+              "reactions_per_message": 0.1955,
+              "reactions_per_1k_chars": 8.6
+            },
+            {
+              "person": "eden",
+              "messages_sent": 380,
+              "characters_sent": 9500,
+              "reactions_given": 64,
+              "reactions_received": 58,
+              "reactions_per_message": 0.1526,
+              "reactions_per_1k_chars": 6.1053
+            }
+          ],
+          "matrix": [
+            [
+              2,
+              32,
+              9,
+              7,
+              17
+            ],
+            [
+              14,
+              0,
+              25,
+              8,
+              11
+            ],
+            [
+              20,
+              27,
+              0,
+              15,
+              22
+            ],
+            [
+              8,
+              8,
+              12,
+              3,
+              5
+            ],
+            [
+              16,
+              12,
+              23,
+              9,
+              1
+            ]
+          ]
+        },
+        "thumbs_down": {
+          "total_reactions": 72,
+          "people": [
+            {
+              "person": "alex",
+              "messages_sent": 400,
+              "characters_sent": 9000,
+              "reactions_given": 15,
+              "reactions_received": 15,
+              "reactions_per_message": 0.0375,
+              "reactions_per_1k_chars": 1.6667
+            },
+            {
+              "person": "blake",
+              "messages_sent": 350,
+              "characters_sent": 8000,
+              "reactions_given": 14,
+              "reactions_received": 19,
+              "reactions_per_message": 0.0543,
+              "reactions_per_1k_chars": 2.375
+            },
+            {
+              "person": "casey",
+              "messages_sent": 500,
+              "characters_sent": 12000,
+              "reactions_given": 20,
+              "reactions_received": 15,
+              "reactions_per_message": 0.03,
+              "reactions_per_1k_chars": 1.25
+            },
+            {
+              "person": "drew",
+              "messages_sent": 220,
+              "characters_sent": 5000,
+              "reactions_given": 8,
+              "reactions_received": 11,
+              "reactions_per_message": 0.05,
+              "reactions_per_1k_chars": 2.2
+            },
+            {
+              "person": "eden",
+              "messages_sent": 380,
+              "characters_sent": 9500,
+              "reactions_given": 15,
+              "reactions_received": 13,
+              "reactions_per_message": 0.0342,
+              "reactions_per_1k_chars": 1.3684
+            }
+          ],
+          "matrix": [
+            [
+              1,
+              7,
+              2,
+              2,
+              3
+            ],
+            [
+              3,
+              0,
+              6,
+              1,
+              2
+            ],
+            [
+              4,
+              6,
+              0,
+              3,
+              5
+            ],
+            [
+              2,
+              1,
+              2,
+              1,
+              1
+            ],
+            [
+              3,
+              2,
+              6,
+              2,
+              0
+            ]
+          ]
+        }
       }
     },
     "last_year": {
@@ -1492,6 +1842,356 @@
             "date": "2025-05-10T20:00:00+00:00"
           }
         ]
+      },
+      "reactions": {
+        "haha": {
+          "total_reactions": 267,
+          "people": [
+            {
+              "person": "alex",
+              "messages_sent": 280,
+              "characters_sent": 6300,
+              "reactions_given": 58,
+              "reactions_received": 52,
+              "reactions_per_message": 0.1857,
+              "reactions_per_1k_chars": 8.254
+            },
+            {
+              "person": "blake",
+              "messages_sent": 244,
+              "characters_sent": 5600,
+              "reactions_given": 51,
+              "reactions_received": 70,
+              "reactions_per_message": 0.2869,
+              "reactions_per_1k_chars": 12.5
+            },
+            {
+              "person": "casey",
+              "messages_sent": 350,
+              "characters_sent": 8400,
+              "reactions_given": 72,
+              "reactions_received": 59,
+              "reactions_per_message": 0.1686,
+              "reactions_per_1k_chars": 7.0238
+            },
+            {
+              "person": "drew",
+              "messages_sent": 154,
+              "characters_sent": 3500,
+              "reactions_given": 31,
+              "reactions_received": 36,
+              "reactions_per_message": 0.2338,
+              "reactions_per_1k_chars": 10.2857
+            },
+            {
+              "person": "eden",
+              "messages_sent": 266,
+              "characters_sent": 6650,
+              "reactions_given": 55,
+              "reactions_received": 50,
+              "reactions_per_message": 0.188,
+              "reactions_per_1k_chars": 7.5188
+            }
+          ],
+          "matrix": [
+            [
+              1,
+              28,
+              8,
+              5,
+              15
+            ],
+            [
+              12,
+              0,
+              21,
+              7,
+              9
+            ],
+            [
+              17,
+              23,
+              0,
+              13,
+              18
+            ],
+            [
+              6,
+              7,
+              10,
+              2,
+              4
+            ],
+            [
+              14,
+              11,
+              19,
+              8,
+              1
+            ]
+          ]
+        },
+        "heart": {
+          "total_reactions": 149,
+          "people": [
+            {
+              "person": "alex",
+              "messages_sent": 280,
+              "characters_sent": 6300,
+              "reactions_given": 31,
+              "reactions_received": 30,
+              "reactions_per_message": 0.1071,
+              "reactions_per_1k_chars": 4.7619
+            },
+            {
+              "person": "blake",
+              "messages_sent": 244,
+              "characters_sent": 5600,
+              "reactions_given": 29,
+              "reactions_received": 39,
+              "reactions_per_message": 0.1598,
+              "reactions_per_1k_chars": 6.9643
+            },
+            {
+              "person": "casey",
+              "messages_sent": 350,
+              "characters_sent": 8400,
+              "reactions_given": 41,
+              "reactions_received": 32,
+              "reactions_per_message": 0.0914,
+              "reactions_per_1k_chars": 3.8095
+            },
+            {
+              "person": "drew",
+              "messages_sent": 154,
+              "characters_sent": 3500,
+              "reactions_given": 17,
+              "reactions_received": 21,
+              "reactions_per_message": 0.1364,
+              "reactions_per_1k_chars": 6.0
+            },
+            {
+              "person": "eden",
+              "messages_sent": 266,
+              "characters_sent": 6650,
+              "reactions_given": 31,
+              "reactions_received": 28,
+              "reactions_per_message": 0.1053,
+              "reactions_per_1k_chars": 4.2105
+            }
+          ],
+          "matrix": [
+            [
+              1,
+              15,
+              4,
+              3,
+              8
+            ],
+            [
+              6,
+              0,
+              12,
+              3,
+              4
+            ],
+            [
+              9,
+              13,
+              0,
+              7,
+              10
+            ],
+            [
+              4,
+              3,
+              5,
+              2,
+              2
+            ],
+            [
+              7,
+              6,
+              11,
+              4,
+              0
+            ]
+          ]
+        },
+        "thumbs_up": {
+          "total_reactions": 215,
+          "people": [
+            {
+              "person": "alex",
+              "messages_sent": 280,
+              "characters_sent": 6300,
+              "reactions_given": 46,
+              "reactions_received": 43,
+              "reactions_per_message": 0.1536,
+              "reactions_per_1k_chars": 6.8254
+            },
+            {
+              "person": "blake",
+              "messages_sent": 244,
+              "characters_sent": 5600,
+              "reactions_given": 41,
+              "reactions_received": 57,
+              "reactions_per_message": 0.2336,
+              "reactions_per_1k_chars": 10.1786
+            },
+            {
+              "person": "casey",
+              "messages_sent": 350,
+              "characters_sent": 8400,
+              "reactions_given": 59,
+              "reactions_received": 47,
+              "reactions_per_message": 0.1343,
+              "reactions_per_1k_chars": 5.5952
+            },
+            {
+              "person": "drew",
+              "messages_sent": 154,
+              "characters_sent": 3500,
+              "reactions_given": 24,
+              "reactions_received": 30,
+              "reactions_per_message": 0.1948,
+              "reactions_per_1k_chars": 8.5714
+            },
+            {
+              "person": "eden",
+              "messages_sent": 266,
+              "characters_sent": 6650,
+              "reactions_given": 45,
+              "reactions_received": 41,
+              "reactions_per_message": 0.1541,
+              "reactions_per_1k_chars": 6.1654
+            }
+          ],
+          "matrix": [
+            [
+              1,
+              22,
+              6,
+              5,
+              12
+            ],
+            [
+              9,
+              0,
+              17,
+              5,
+              7
+            ],
+            [
+              13,
+              19,
+              0,
+              10,
+              15
+            ],
+            [
+              5,
+              5,
+              8,
+              2,
+              3
+            ],
+            [
+              11,
+              8,
+              16,
+              6,
+              0
+            ]
+          ]
+        },
+        "thumbs_down": {
+          "total_reactions": 49,
+          "people": [
+            {
+              "person": "alex",
+              "messages_sent": 280,
+              "characters_sent": 6300,
+              "reactions_given": 10,
+              "reactions_received": 11,
+              "reactions_per_message": 0.0393,
+              "reactions_per_1k_chars": 1.746
+            },
+            {
+              "person": "blake",
+              "messages_sent": 244,
+              "characters_sent": 5600,
+              "reactions_given": 10,
+              "reactions_received": 13,
+              "reactions_per_message": 0.0533,
+              "reactions_per_1k_chars": 2.3214
+            },
+            {
+              "person": "casey",
+              "messages_sent": 350,
+              "characters_sent": 8400,
+              "reactions_given": 14,
+              "reactions_received": 10,
+              "reactions_per_message": 0.0286,
+              "reactions_per_1k_chars": 1.1905
+            },
+            {
+              "person": "drew",
+              "messages_sent": 154,
+              "characters_sent": 3500,
+              "reactions_given": 5,
+              "reactions_received": 8,
+              "reactions_per_message": 0.0519,
+              "reactions_per_1k_chars": 2.2857
+            },
+            {
+              "person": "eden",
+              "messages_sent": 266,
+              "characters_sent": 6650,
+              "reactions_given": 10,
+              "reactions_received": 10,
+              "reactions_per_message": 0.0376,
+              "reactions_per_1k_chars": 1.5038
+            }
+          ],
+          "matrix": [
+            [
+              1,
+              5,
+              1,
+              1,
+              2
+            ],
+            [
+              2,
+              0,
+              4,
+              1,
+              1
+            ],
+            [
+              3,
+              5,
+              0,
+              2,
+              4
+            ],
+            [
+              2,
+              1,
+              1,
+              1,
+              0
+            ],
+            [
+              2,
+              1,
+              4,
+              1,
+              0
+            ]
+          ]
+        }
       }
     },
     "last_30": {
@@ -2233,6 +2933,356 @@
             "date": "2025-05-10T20:00:00+00:00"
           }
         ]
+      },
+      "reactions": {
+        "haha": {
+          "total_reactions": 54,
+          "people": [
+            {
+              "person": "alex",
+              "messages_sent": 60,
+              "characters_sent": 1350,
+              "reactions_given": 12,
+              "reactions_received": 11,
+              "reactions_per_message": 0.1833,
+              "reactions_per_1k_chars": 8.1481
+            },
+            {
+              "person": "blake",
+              "messages_sent": 52,
+              "characters_sent": 1200,
+              "reactions_given": 10,
+              "reactions_received": 15,
+              "reactions_per_message": 0.2885,
+              "reactions_per_1k_chars": 12.5
+            },
+            {
+              "person": "casey",
+              "messages_sent": 75,
+              "characters_sent": 1800,
+              "reactions_given": 15,
+              "reactions_received": 12,
+              "reactions_per_message": 0.16,
+              "reactions_per_1k_chars": 6.6667
+            },
+            {
+              "person": "drew",
+              "messages_sent": 33,
+              "characters_sent": 750,
+              "reactions_given": 6,
+              "reactions_received": 7,
+              "reactions_per_message": 0.2121,
+              "reactions_per_1k_chars": 9.3333
+            },
+            {
+              "person": "eden",
+              "messages_sent": 57,
+              "characters_sent": 1425,
+              "reactions_given": 11,
+              "reactions_received": 10,
+              "reactions_per_message": 0.1754,
+              "reactions_per_1k_chars": 7.0175
+            }
+          ],
+          "matrix": [
+            [
+              0,
+              6,
+              1,
+              1,
+              3
+            ],
+            [
+              2,
+              0,
+              4,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              0,
+              2,
+              4
+            ],
+            [
+              1,
+              1,
+              2,
+              0,
+              1
+            ],
+            [
+              3,
+              2,
+              4,
+              1,
+              0
+            ]
+          ]
+        },
+        "heart": {
+          "total_reactions": 32,
+          "people": [
+            {
+              "person": "alex",
+              "messages_sent": 60,
+              "characters_sent": 1350,
+              "reactions_given": 6,
+              "reactions_received": 8,
+              "reactions_per_message": 0.1333,
+              "reactions_per_1k_chars": 5.9259
+            },
+            {
+              "person": "blake",
+              "messages_sent": 52,
+              "characters_sent": 1200,
+              "reactions_given": 6,
+              "reactions_received": 9,
+              "reactions_per_message": 0.1731,
+              "reactions_per_1k_chars": 7.5
+            },
+            {
+              "person": "casey",
+              "messages_sent": 75,
+              "characters_sent": 1800,
+              "reactions_given": 10,
+              "reactions_received": 6,
+              "reactions_per_message": 0.08,
+              "reactions_per_1k_chars": 3.3333
+            },
+            {
+              "person": "drew",
+              "messages_sent": 33,
+              "characters_sent": 750,
+              "reactions_given": 3,
+              "reactions_received": 5,
+              "reactions_per_message": 0.1515,
+              "reactions_per_1k_chars": 6.6667
+            },
+            {
+              "person": "eden",
+              "messages_sent": 57,
+              "characters_sent": 1425,
+              "reactions_given": 7,
+              "reactions_received": 6,
+              "reactions_per_message": 0.1053,
+              "reactions_per_1k_chars": 4.2105
+            }
+          ],
+          "matrix": [
+            [
+              0,
+              3,
+              0,
+              1,
+              1
+            ],
+            [
+              1,
+              0,
+              3,
+              0,
+              1
+            ],
+            [
+              1,
+              3,
+              0,
+              1,
+              3
+            ],
+            [
+              1,
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              1,
+              1,
+              3,
+              0,
+              0
+            ]
+          ]
+        },
+        "thumbs_up": {
+          "total_reactions": 45,
+          "people": [
+            {
+              "person": "alex",
+              "messages_sent": 60,
+              "characters_sent": 1350,
+              "reactions_given": 9,
+              "reactions_received": 10,
+              "reactions_per_message": 0.1667,
+              "reactions_per_1k_chars": 7.4074
+            },
+            {
+              "person": "blake",
+              "messages_sent": 52,
+              "characters_sent": 1200,
+              "reactions_given": 9,
+              "reactions_received": 13,
+              "reactions_per_message": 0.25,
+              "reactions_per_1k_chars": 10.8333
+            },
+            {
+              "person": "casey",
+              "messages_sent": 75,
+              "characters_sent": 1800,
+              "reactions_given": 14,
+              "reactions_received": 9,
+              "reactions_per_message": 0.12,
+              "reactions_per_1k_chars": 5.0
+            },
+            {
+              "person": "drew",
+              "messages_sent": 33,
+              "characters_sent": 750,
+              "reactions_given": 4,
+              "reactions_received": 7,
+              "reactions_per_message": 0.2121,
+              "reactions_per_1k_chars": 9.3333
+            },
+            {
+              "person": "eden",
+              "messages_sent": 57,
+              "characters_sent": 1425,
+              "reactions_given": 9,
+              "reactions_received": 9,
+              "reactions_per_message": 0.1579,
+              "reactions_per_1k_chars": 6.3158
+            }
+          ],
+          "matrix": [
+            [
+              0,
+              4,
+              0,
+              1,
+              2
+            ],
+            [
+              1,
+              0,
+              4,
+              0,
+              1
+            ],
+            [
+              2,
+              4,
+              0,
+              1,
+              4
+            ],
+            [
+              1,
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              2,
+              1,
+              4,
+              0,
+              0
+            ]
+          ]
+        },
+        "thumbs_down": {
+          "total_reactions": 11,
+          "people": [
+            {
+              "person": "alex",
+              "messages_sent": 60,
+              "characters_sent": 1350,
+              "reactions_given": 2,
+              "reactions_received": 3,
+              "reactions_per_message": 0.05,
+              "reactions_per_1k_chars": 2.2222
+            },
+            {
+              "person": "blake",
+              "messages_sent": 52,
+              "characters_sent": 1200,
+              "reactions_given": 2,
+              "reactions_received": 3,
+              "reactions_per_message": 0.0577,
+              "reactions_per_1k_chars": 2.5
+            },
+            {
+              "person": "casey",
+              "messages_sent": 75,
+              "characters_sent": 1800,
+              "reactions_given": 4,
+              "reactions_received": 2,
+              "reactions_per_message": 0.0267,
+              "reactions_per_1k_chars": 1.1111
+            },
+            {
+              "person": "drew",
+              "messages_sent": 33,
+              "characters_sent": 750,
+              "reactions_given": 1,
+              "reactions_received": 3,
+              "reactions_per_message": 0.0909,
+              "reactions_per_1k_chars": 4.0
+            },
+            {
+              "person": "eden",
+              "messages_sent": 57,
+              "characters_sent": 1425,
+              "reactions_given": 2,
+              "reactions_received": 2,
+              "reactions_per_message": 0.0351,
+              "reactions_per_1k_chars": 1.4035
+            }
+          ],
+          "matrix": [
+            [
+              0,
+              1,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0,
+              0,
+              1
+            ],
+            [
+              1,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0,
+              0
+            ]
+          ]
+        }
       }
     }
   },

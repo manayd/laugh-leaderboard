@@ -289,6 +289,37 @@
       background: none; border: none; color: var(--mint-deep); font: inherit;
       font-weight: 700; text-decoration: underline; cursor: pointer; padding: 0;
     }
+    .name-mapper {
+      display: none; margin: 8px 0 22px; padding: 20px;
+      background: rgba(255,255,255,0.72); border: 1px solid var(--line);
+      border-radius: 20px; box-shadow: var(--shadow);
+    }
+    .name-mapper.visible { display: block; }
+    .name-mapper h2 { font-size: 1.35rem; margin-bottom: 5px; }
+    .name-mapper > p { color: var(--muted); margin-bottom: 16px; }
+    .name-map-list { display: grid; gap: 9px; }
+    .name-map-row {
+      display: grid; grid-template-columns: minmax(100px, 1fr) minmax(130px, 1.2fr);
+      gap: 10px; align-items: center;
+    }
+    .name-map-handle {
+      font-family: "IBM Plex Mono", monospace; color: var(--muted);
+      font-size: 0.78rem; overflow-wrap: anywhere;
+    }
+    .name-map-row input {
+      width: 100%; border: 1px solid var(--line); border-radius: 10px;
+      background: #fff; color: var(--ink); font: inherit; padding: 10px 11px;
+    }
+    .name-map-row input:focus { outline: 2px solid var(--mint); border-color: transparent; }
+    .name-map-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+    .name-map-actions button {
+      border: 1px solid var(--line); border-radius: 999px; padding: 10px 14px;
+      background: #fff; color: var(--muted); font: inherit; font-weight: 700; cursor: pointer;
+    }
+    .name-map-actions .primary { background: var(--ink); color: var(--lime); border-color: var(--ink); }
+    @media (max-width: 520px) {
+      .name-map-row { grid-template-columns: 1fr; gap: 4px; }
+    }
     .app-hidden { display: none; }
     .app-visible { display: block; }
     .dropzone.loaded { display: none; }
@@ -304,7 +335,7 @@
   <div class="wrap">
     <header>
       <div class="brand" id="brand">Laugh Board</div>
-      <p class="tagline">Haha rankings from your iMessage group chat — all on your Mac.</p>
+      <p class="tagline">Tapback rankings from your iMessage group chat — all on your Mac.</p>
       <div class="meta-row" id="meta"></div>
     </header>
 
@@ -314,6 +345,16 @@
         <p>Nothing is uploaded. The file stays in your browser only.</p>
         <p class="drop-hint">Or click to choose a file · try <button type="button" id="load-sample" class="linkish">sample-data.json</button></p>
         <input type="file" id="file-input" accept=".json,application/json" hidden />
+      </div>
+    </section>
+
+    <section id="name-mapper" class="name-mapper">
+      <h2>Name your group</h2>
+      <p>Add a name for each phone number or email. Leave any field blank to keep the original label.</p>
+      <div id="name-map-list" class="name-map-list"></div>
+      <div class="name-map-actions">
+        <button type="button" id="skip-names">Skip</button>
+        <button type="button" id="apply-names" class="primary">View my board</button>
       </div>
     </section>
 
@@ -330,12 +371,18 @@
 
     <section class="panel active" id="panel-board">
       <div class="controls">
+        <div class="seg reaction" id="reaction-seg">
+          <button type="button" data-reaction="haha" class="active">Haha</button>
+          <button type="button" data-reaction="heart">Heart</button>
+          <button type="button" data-reaction="thumbs_up">Thumbs Up</button>
+          <button type="button" data-reaction="thumbs_down">Thumbs Down</button>
+        </div>
         <div class="seg" id="window-seg"></div>
         <div class="seg metric" id="metric-seg">
-          <button type="button" data-metric="laughs_received" class="active">Received</button>
-          <button type="button" data-metric="laughs_given">Given</button>
-          <button type="button" data-metric="laughs_per_message">Per message</button>
-          <button type="button" data-metric="laughs_per_1k_chars">Per 1k chars</button>
+          <button type="button" data-metric="received" class="active">Received</button>
+          <button type="button" data-metric="given">Given</button>
+          <button type="button" data-metric="per_message">Per message</button>
+          <button type="button" data-metric="per_1k_chars">Per 1k chars</button>
         </div>
       </div>
       <div class="podium" id="podium"></div>
@@ -347,9 +394,17 @@
     </section>
 
     <section class="panel" id="panel-matrix">
-      <div class="section-title">Who laughs at whom</div>
-      <p class="section-sub">Rows = who laughed · columns = who got the Haha.</p>
-      <div class="controls"><div class="seg" id="matrix-window-seg"></div></div>
+      <div class="section-title" id="matrix-title">Who laughs at whom</div>
+      <p class="section-sub" id="matrix-sub">Rows = who reacted · columns = who received it.</p>
+      <div class="controls">
+        <div class="seg reaction" id="matrix-reaction-seg">
+          <button type="button" data-matrix-reaction="haha" class="active">Haha</button>
+          <button type="button" data-matrix-reaction="heart">Heart</button>
+          <button type="button" data-matrix-reaction="thumbs_up">Thumbs Up</button>
+          <button type="button" data-matrix-reaction="thumbs_down">Thumbs Down</button>
+        </div>
+        <div class="seg" id="matrix-window-seg"></div>
+      </div>
       <div class="panel-card">
         <div class="matrix-card-inner">
           <div class="matrix-legend-names" id="matrix-name-legend"></div>
@@ -432,6 +487,7 @@
 
   <script>
     let DATA = null;
+    let RAW_DATA = null;
     let PEOPLE = [];
     let COLORS = {};
     let MATRIX_SHORT = {};
@@ -470,10 +526,18 @@
       { key:"last_year", label:"Last 365 days" },
       { key:"last_30", label:"Last 30 days" },
     ];
+    const REACTIONS = {
+      haha: { label:"Haha", plural:"Hahas", verb:"laughs at" },
+      heart: { label:"Heart", plural:"Hearts", verb:"hearts" },
+      thumbs_up: { label:"Thumbs Up", plural:"Thumbs Ups", verb:"thumbs up" },
+      thumbs_down: { label:"Thumbs Down", plural:"Thumbs Downs", verb:"thumbs down" },
+    };
 
     let windowKey = "all_time";
-    let metricKey = "laughs_received";
+    let reactionKey = "haha";
+    let metricKey = "received";
     let matrixWindow = "all_time";
+    let matrixReactionKey = "haha";
     let heatWindow = "all_time";
     let funniestWindow = "all_time";
     let clipsWindow = "all_time";
@@ -486,31 +550,64 @@
     let raceBuilt = false;
 
     const METRIC_META = {
-      laughs_received: {
-        label: "Laughs received",
+      received: {
+        label: "received",
         format: (n) => n.toLocaleString(),
         valueHint: (p) => `${p.messages_sent.toLocaleString()} msgs · ${fmtChars(p.characters_sent||0)} chars`,
-        value: (p) => p.laughs_received,
+        value: (p) => p.reactions_received,
       },
-      laughs_given: {
-        label: "Laughs given",
+      given: {
+        label: "given",
         format: (n) => n.toLocaleString(),
         valueHint: (p) => `${p.messages_sent.toLocaleString()} msgs`,
-        value: (p) => p.laughs_given,
+        value: (p) => p.reactions_given,
       },
-      laughs_per_message: {
-        label: "Laughs / message",
+      per_message: {
+        label: "per message",
         format: (n) => Number(n).toFixed(3),
-        valueHint: (p) => `${p.laughs_received} on ${p.messages_sent} msgs`,
-        value: (p) => p.laughs_per_message,
+        valueHint: (p) => `${p.reactions_received} on ${p.messages_sent} msgs`,
+        value: (p) => p.reactions_per_message,
       },
-      laughs_per_1k_chars: {
-        label: "Laughs / 1k chars",
+      per_1k_chars: {
+        label: "per 1k chars",
         format: (n) => Number(n).toFixed(2),
-        valueHint: (p) => `${p.laughs_received} on ${fmtChars(p.characters_sent||0)} chars`,
-        value: (p) => p.laughs_per_1k_chars,
+        valueHint: (p) => `${p.reactions_received} on ${fmtChars(p.characters_sent||0)} chars`,
+        value: (p) => p.reactions_per_1k_chars,
       },
     };
+
+    function reactionBlock(windowKeyValue, kind) {
+      const w = DATA.window[windowKeyValue];
+      if (w.reactions && w.reactions[kind]) return w.reactions[kind];
+      if (kind === "haha") {
+        return {
+          total_reactions: w.total_laughs,
+          matrix: w.matrix,
+          people: w.people.map((p) => ({
+            person: p.person,
+            messages_sent: p.messages_sent,
+            characters_sent: p.characters_sent || 0,
+            reactions_given: p.laughs_given,
+            reactions_received: p.laughs_received,
+            reactions_per_message: p.laughs_per_message,
+            reactions_per_1k_chars: p.laughs_per_1k_chars,
+          })),
+        };
+      }
+      return {
+        total_reactions: 0,
+        matrix: PEOPLE.map(() => PEOPLE.map(() => 0)),
+        people: w.people.map((p) => ({
+          person: p.person,
+          messages_sent: p.messages_sent,
+          characters_sent: p.characters_sent || 0,
+          reactions_given: 0,
+          reactions_received: 0,
+          reactions_per_message: 0,
+          reactions_per_1k_chars: 0,
+        })),
+      };
+    }
 
     function fmtChars(n) { return n >= 1000 ? (n/1000).toFixed(1)+"k" : String(n); }
     function fmtDate(iso) {
@@ -575,18 +672,26 @@
 
     function renderMeta() {
       const w = DATA.window[windowKey];
+      const reaction = reactionBlock(windowKey, reactionKey);
       document.getElementById("meta").innerHTML = `
         <span><strong>${w.label}</strong> · ${fmtDate(w.from)} → ${fmtDate(w.to)}</span>
         <span><strong>${w.total_messages.toLocaleString()}</strong> messages</span>
-        <span><strong>${w.total_laughs.toLocaleString()}</strong> Hahas</span>
+        <span><strong>${reaction.total_reactions.toLocaleString()}</strong> ${REACTIONS[reactionKey].plural}</span>
         <span><strong>${DATA.chats_included}</strong> threads</span>`;
     }
 
     function renderBoard() {
       const meta = METRIC_META[metricKey];
-      const people = ranked(DATA.window[windowKey].people);
+      const block = reactionBlock(windowKey, reactionKey);
+      const people = ranked(block.people);
       const max = Math.max(...people.map((p) => meta.value(p)), 0.0001);
-      renderPodium(document.getElementById("podium"), people, (p) => meta.format(meta.value(p)), meta.label);
+      const reactionLabel = REACTIONS[reactionKey].label;
+      renderPodium(
+        document.getElementById("podium"),
+        people,
+        (p) => meta.format(meta.value(p)),
+        `${reactionLabel} · ${meta.label}`
+      );
       const container = document.getElementById("rows");
       container.innerHTML = people.map((p,i) => `
         <div class="row" data-i="${i}">
@@ -599,21 +704,23 @@
           <div class="score-cell">${meta.format(meta.value(p))}</div>
         </div>`).join("");
       animateBars(container);
-      const list = DATA.window[windowKey].people;
-      const topRate = [...list].sort((a,b)=>b.laughs_per_message-a.laughs_per_message)[0];
-      const topChars = [...list].sort((a,b)=>b.laughs_per_1k_chars-a.laughs_per_1k_chars)[0];
-      const topRecv = [...list].sort((a,b)=>b.laughs_received-a.laughs_received)[0];
+      const list = block.people;
+      const topRate = [...list].sort((a,b)=>b.reactions_per_message-a.reactions_per_message)[0];
+      const topChars = [...list].sort((a,b)=>b.reactions_per_1k_chars-a.reactions_per_1k_chars)[0];
+      const topRecv = [...list].sort((a,b)=>b.reactions_received-a.reactions_received)[0];
       document.getElementById("stats").innerHTML = `
         <div class="stat"><div class="stat-label">Best per message</div><div class="stat-value">${topRate.person}</div>
-          <div class="bar-meta" style="margin-top:4px">${topRate.laughs_per_message.toFixed(3)} / msg</div></div>
+          <div class="bar-meta" style="margin-top:4px">${topRate.reactions_per_message.toFixed(3)} / msg</div></div>
         <div class="stat"><div class="stat-label">Best per 1k chars</div><div class="stat-value">${topChars.person}</div>
-          <div class="bar-meta" style="margin-top:4px">${topChars.laughs_per_1k_chars.toFixed(2)} / 1k</div></div>
+          <div class="bar-meta" style="margin-top:4px">${topChars.reactions_per_1k_chars.toFixed(2)} / 1k</div></div>
         <div class="stat"><div class="stat-label">Most received</div><div class="stat-value">${topRecv.person}</div>
-          <div class="bar-meta" style="margin-top:4px">${topRecv.laughs_received.toLocaleString()} Hahas</div></div>`;
+          <div class="bar-meta" style="margin-top:4px">${topRecv.reactions_received.toLocaleString()} ${REACTIONS[reactionKey].plural}</div></div>`;
     }
 
     function renderMatrix() {
-      const grid = DATA.window[matrixWindow].matrix;
+      const grid = reactionBlock(matrixWindow, matrixReactionKey).matrix;
+      const reaction = REACTIONS[matrixReactionKey];
+      document.getElementById("matrix-title").textContent = `Who ${reaction.verb} whom`;
       const max = Math.max(1, ...grid.flat());
       document.getElementById("matrix-name-legend").innerHTML = PEOPLE.map((p) =>
         `<div><strong>${MATRIX_SHORT[p]}</strong> ${p}</div>`
@@ -643,10 +750,10 @@
       });
       el.innerHTML = h;
       const edges = [];
-      grid.forEach((row,i) => row.forEach((v,j) => { if (i!==j) edges.push({v,i,j}); }));
+      grid.forEach((row,i) => row.forEach((v,j) => { if (i!==j && v>0) edges.push({v,i,j}); }));
       edges.sort((a,b)=>b.v-a.v);
       const topE = edges.slice(0,3);
-      let insight = "No Hahas in this window.";
+      let insight = `No ${reaction.plural} in this window.`;
       if (topE.length) {
         insight = `Hottest: <strong>${PEOPLE[topE[0].i]}</strong> → <strong>${PEOPLE[topE[0].j]}</strong> (${topE[0].v.toLocaleString()})`;
         if (topE[1]) insight += `. Also ${PEOPLE[topE[1].i]}→${PEOPLE[topE[1].j]} (${topE[1].v})`;
@@ -886,6 +993,56 @@
       }
     }
 
+    function showNameMapper(data) {
+      validateData(data);
+      RAW_DATA = data;
+      document.getElementById("dropzone").classList.add("loaded");
+      document.getElementById("app").classList.add("app-hidden");
+      document.getElementById("app").classList.remove("app-visible");
+      const mapper = document.getElementById("name-mapper");
+      const list = document.getElementById("name-map-list");
+      list.innerHTML = data.people.map((person, i) => `
+        <label class="name-map-row">
+          <span class="name-map-handle">${escapeHtml(person)}</span>
+          <input type="text" data-person-index="${i}" placeholder="Enter name" autocomplete="off" />
+        </label>
+      `).join("");
+      mapper.classList.add("visible");
+      const first = list.querySelector("input");
+      if (first) first.focus();
+    }
+
+    function renameDeep(value, mapping) {
+      if (typeof value === "string") return mapping[value] || value;
+      if (Array.isArray(value)) return value.map((item) => renameDeep(item, mapping));
+      if (value && typeof value === "object") {
+        const out = {};
+        Object.entries(value).forEach(([key, item]) => {
+          out[mapping[key] || key] = renameDeep(item, mapping);
+        });
+        return out;
+      }
+      return value;
+    }
+
+    function applyNameMapping() {
+      if (!RAW_DATA) return;
+      const mapping = {};
+      const finalNames = [];
+      document.querySelectorAll("#name-map-list input").forEach((input) => {
+        const original = RAW_DATA.people[Number(input.dataset.personIndex)];
+        const name = input.value.trim() || original;
+        mapping[original] = name;
+        finalNames.push(name.toLowerCase());
+      });
+      if (new Set(finalNames).size !== finalNames.length) {
+        alert("Please use a different name for each person.");
+        return;
+      }
+      document.getElementById("name-mapper").classList.remove("visible");
+      boot(renameDeep(RAW_DATA, mapping));
+    }
+
     function bindOnce() {
       if (window.__laughBound) return;
       window.__laughBound = true;
@@ -904,7 +1061,16 @@
       });
       wireSeg("window-seg","data-window",(w)=>{ windowKey=w; renderMeta(); renderBoard(); });
       wireSeg("metric-seg","data-metric",(m)=>{ metricKey=m; renderBoard(); });
+      wireSeg("reaction-seg","data-reaction",(kind)=>{
+        reactionKey=kind;
+        renderMeta();
+        renderBoard();
+      });
       wireSeg("matrix-window-seg","data-window",(w)=>{ matrixWindow=w; renderMatrix(); });
+      wireSeg("matrix-reaction-seg","data-matrix-reaction",(kind)=>{
+        matrixReactionKey=kind;
+        renderMatrix();
+      });
       wireSeg("heat-window-seg","data-window",(w)=>{ heatWindow=w; renderHeat(); });
       wireSeg("funniest-window-seg","data-window",(w)=>{ funniestWindow=w; renderFunniest(); });
       wireSeg("clips-window-seg","data-window",(w)=>{ clipsWindow=w; renderClips(); });
@@ -961,7 +1127,9 @@
     function resetToDrop() {
       stopRace();
       DATA = null;
+      RAW_DATA = null;
       document.getElementById("dropzone").classList.remove("loaded");
+      document.getElementById("name-mapper").classList.remove("visible");
       const app = document.getElementById("app");
       app.classList.add("app-hidden");
       app.classList.remove("app-visible");
@@ -975,7 +1143,7 @@
       const reader = new FileReader();
       reader.onload = () => {
         try {
-          boot(JSON.parse(reader.result));
+          showNameMapper(JSON.parse(reader.result));
         } catch (err) {
           alert("Could not read that file.\\n" + (err && err.message ? err.message : err));
         }
@@ -1005,19 +1173,27 @@
       try {
         const res = await fetch("sample-data.json");
         if (!res.ok) throw new Error("sample-data.json not found next to index.html");
-        boot(await res.json());
+        showNameMapper(await res.json());
       } catch (err) {
         alert("Open this folder via a local server, or drop sample-data.json manually.\\n" +
               "Quick server: python3 -m http.server 8765\\nThen open http://localhost:8765\\n\\n" +
               (err && err.message ? err.message : err));
       }
     });
+    document.getElementById("apply-names").addEventListener("click", applyNameMapping);
+    document.getElementById("skip-names").addEventListener("click", () => {
+      document.getElementById("name-mapper").classList.remove("visible");
+      boot(RAW_DATA);
+    });
+    document.getElementById("name-map-list").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") applyNameMapping();
+    });
     document.getElementById("load-another").addEventListener("click", resetToDrop);
 
     // Auto-load laugh-data.json if present beside index.html (file:// may block; http.server works)
     fetch("laugh-data.json").then(async (res) => {
       if (!res.ok) return;
-      try { boot(await res.json()); } catch (_) {}
+      try { showNameMapper(await res.json()); } catch (_) {}
     }).catch(() => {});
 
   </script>
