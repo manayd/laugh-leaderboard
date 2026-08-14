@@ -34,8 +34,8 @@ In Terminal:
 
 ```bash
 cd ~/Desktop
-git clone https://github.com/worldofteek/imessage-laughs.git
-cd imessage-laughs
+git clone https://github.com/worldofteek/laugh-leaderboard.git
+cd laugh-leaderboard
 ```
 
 If macOS asks to install developer tools, click **Install**, wait, then run the `git clone` line again.
