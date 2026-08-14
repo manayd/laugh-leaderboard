@@ -1,0 +1,7 @@
+laugh-data.json
+laugh-leaderboard.csv
+names.json
+.DS_Store
+__pycache__/
+*.pyc
+/tmp/

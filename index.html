@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>iMessage Laugh Board</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #0c1f1a; --muted: #3d5c52; --line: rgba(12,31,26,0.12); --paper: #f3f7f2;
+      --mint: #1fa97a; --mint-deep: #0d7a56; --lime: #c8f04d; --coral: #ff6b4a;
+      --gold: #f0b429; --silver: #9aa7b0; --bronze: #c47a3a;
+      --shadow: 0 18px 50px rgba(12,31,26,0.08); --radius: 18px;
+      --race-row-h: 40px; --race-gap: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Bricolage Grotesque", system-ui, sans-serif; color: var(--ink);
+      background:
+        radial-gradient(1200px 600px at 10% -10%, rgba(200,240,77,0.45), transparent 55%),
+        radial-gradient(900px 500px at 100% 0%, rgba(126,200,255,0.35), transparent 50%),
+        radial-gradient(800px 500px at 50% 100%, rgba(255,107,74,0.12), transparent 55%),
+        linear-gradient(180deg, #eef6ec 0%, var(--paper) 40%, #e8f0ea 100%);
+      min-height: 100vh; line-height: 1.4;
+    }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 28px 16px 80px; }
+    .brand {
+      font-size: clamp(3rem, 12vw, 5.2rem); font-weight: 800; letter-spacing: -0.04em; line-height: 0.9;
+      background: linear-gradient(105deg, var(--ink) 20%, var(--mint-deep) 70%, var(--coral) 120%);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .tagline { margin-top: 12px; max-width: 48ch; color: var(--muted); font-weight: 500; }
+    .meta-row {
+      display: flex; flex-wrap: wrap; gap: 8px 14px; margin-top: 14px;
+      font-family: "IBM Plex Mono", monospace; font-size: 0.75rem; color: var(--muted);
+    }
+    .meta-row strong { color: var(--ink); }
+    nav.tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 24px 0 16px; }
+    nav.tabs button {
+      border: 1px solid var(--line); background: rgba(255,255,255,0.65);
+      font-family: inherit; font-weight: 700; font-size: 0.88rem;
+      padding: 10px 14px; border-radius: 999px; cursor: pointer; color: var(--muted);
+    }
+    nav.tabs button.active { background: var(--ink); color: var(--lime); border-color: var(--ink); }
+    .panel { display: none; }
+    .panel.active { display: block; }
+    .controls { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .seg {
+      display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 4px;
+      background: rgba(255,255,255,0.65); border: 1px solid var(--line); border-radius: 999px;
+    }
+    .seg button {
+      border: 0; background: transparent; font-family: inherit; font-weight: 700;
+      font-size: 0.78rem; padding: 8px 11px; border-radius: 999px; cursor: pointer; color: var(--muted);
+    }
+    .seg button.active { background: var(--ink); color: var(--lime); }
+    .seg.metric button.active { background: var(--mint-deep); color: #fff; }
+    .section-title { font-size: 1.3rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 6px; }
+    .section-sub { color: var(--muted); font-size: 0.92rem; margin-bottom: 14px; max-width: 56ch; }
+    .panel-card {
+      background: rgba(255,255,255,0.72); border: 1px solid var(--line);
+      border-radius: 20px; box-shadow: var(--shadow); overflow: hidden;
+    }
+    .podium {
+      display: grid; grid-template-columns: 1fr 1.15fr 1fr; gap: 10px; align-items: end; margin-bottom: 18px;
+    }
+    @media (max-width: 640px) {
+      .podium { grid-template-columns: 1fr; }
+      .podium .p2 { order: 2; } .podium .p1 { order: 1; } .podium .p3 { order: 3; }
+    }
+    .podium-card {
+      background: rgba(255,255,255,0.75); border: 1px solid var(--line);
+      border-radius: var(--radius); padding: 16px; text-align: center; box-shadow: var(--shadow);
+    }
+    .podium .p1 {
+      padding-top: 22px; padding-bottom: 20px;
+      background: linear-gradient(160deg, rgba(240,180,41,0.22), rgba(255,255,255,0.85));
+      border-color: rgba(240,180,41,0.45);
+    }
+    .medal {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; border-radius: 50%; margin-bottom: 6px;
+      font-family: "IBM Plex Mono", monospace; font-weight: 600; font-size: 0.85rem;
+    }
+    .p1 .medal { background: var(--gold); }
+    .p2 .medal { background: var(--silver); }
+    .p3 .medal { background: var(--bronze); color: #fff; }
+    .podium-name { font-size: 1.3rem; font-weight: 800; text-transform: capitalize; letter-spacing: -0.03em; }
+    .podium-score { margin-top: 4px; font-family: "IBM Plex Mono", monospace; font-size: 1.2rem; font-weight: 600; color: var(--mint-deep); }
+    .podium-sub { margin-top: 2px; font-size: 0.8rem; color: var(--muted); }
+    .board-head, .row {
+      display: grid; grid-template-columns: 44px minmax(80px,1.1fr) 1fr 78px;
+      gap: 10px; align-items: center; padding: 12px 16px;
+    }
+    .board-head {
+      font-family: "IBM Plex Mono", monospace; font-size: 0.68rem; text-transform: uppercase;
+      letter-spacing: 0.05em; color: var(--muted); border-bottom: 1px solid var(--line);
+    }
+    .row { border-bottom: 1px solid var(--line); }
+    .row:last-child { border-bottom: 0; }
+    @media (max-width: 560px) {
+      .board-head { display: none; }
+      .row { grid-template-columns: 36px 1fr auto; grid-template-rows: auto auto; gap: 4px 8px; }
+      .row .bar-cell { grid-column: 2 / 4; }
+      .row .score-cell { grid-row: 1; grid-column: 3; }
+    }
+    .rank { font-family: "IBM Plex Mono", monospace; font-weight: 600; color: var(--muted); }
+    .rank.top { color: var(--mint-deep); }
+    .name { font-weight: 700; text-transform: capitalize; }
+    .bar-track { height: 10px; background: rgba(12,31,26,0.07); border-radius: 999px; overflow: hidden; }
+    .bar-fill {
+      height: 100%; width: 0; border-radius: 999px;
+      background: linear-gradient(90deg, var(--mint), var(--lime));
+      transition: width 0.7s cubic-bezier(0.22,1,0.36,1);
+    }
+    .row[data-i="0"] .bar-fill { background: linear-gradient(90deg, #d4a017, var(--gold)); }
+    .row[data-i="1"] .bar-fill { background: linear-gradient(90deg, #7d8b94, var(--silver)); }
+    .row[data-i="2"] .bar-fill { background: linear-gradient(90deg, #a8632a, #e0934a); }
+    .bar-meta { font-family: "IBM Plex Mono", monospace; font-size: 0.66rem; color: var(--muted); margin-top: 3px; }
+    .score-cell { font-family: "IBM Plex Mono", monospace; font-weight: 600; text-align: right; }
+    .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-top: 14px; }
+    @media (max-width: 560px) { .stats { grid-template-columns: 1fr; } }
+    .stat { padding: 14px 16px; border-radius: var(--radius); border: 1px solid var(--line); background: rgba(255,255,255,0.55); }
+    .stat-label { font-family: "IBM Plex Mono", monospace; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+    .stat-value { margin-top: 4px; font-size: 1.35rem; font-weight: 800; text-transform: capitalize; letter-spacing: -0.03em; }
+
+    /* Matrix phone-fit */
+    .matrix-card-inner { padding: 12px 10px 14px; }
+    .matrix-legend-names {
+      display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 4px 8px;
+      margin-bottom: 10px; font-family: "IBM Plex Mono", monospace; font-size: 0.66rem; color: var(--muted);
+    }
+    @media (min-width: 640px) { .matrix-legend-names { grid-template-columns: repeat(5, minmax(0,1fr)); } }
+    .matrix-legend-names strong { color: var(--ink); font-weight: 700; }
+    .matrix-stage { width: 100%; overflow: hidden; }
+    .matrix-scale-wrap { width: 100%; display: flex; justify-content: center; }
+    .matrix-grid {
+      --mx-label: 28px; --mx-cell: 34px;
+      display: grid; grid-template-columns: var(--mx-label) repeat(var(--mx-n, 9), var(--mx-cell));
+      grid-auto-rows: var(--mx-cell); gap: 2px; width: max-content;
+    }
+    .matrix-grid .corner, .matrix-grid .col-h, .matrix-grid .row-h, .matrix-grid .cell {
+      display: flex; align-items: center; justify-content: center;
+      font-family: "IBM Plex Mono", monospace; min-height: 0; overflow: hidden;
+    }
+    .matrix-grid .col-h, .matrix-grid .row-h { font-weight: 700; font-size: 0.55rem; color: var(--muted); text-transform: uppercase; }
+    .matrix-grid .cell { font-weight: 600; font-size: 0.55rem; border-radius: 4px; }
+    .matrix-grid .cell.self { outline: 1px dashed rgba(12,31,26,0.18); outline-offset: -1px; }
+    .matrix-scale-bar {
+      display: flex; align-items: center; gap: 8px; margin-top: 10px;
+      font-family: "IBM Plex Mono", monospace; font-size: 0.65rem; color: var(--muted);
+    }
+    .legend-bar { flex: 1; height: 8px; border-radius: 999px; background: linear-gradient(90deg,#eef6ec,#1fa97a 55%,#0d7a56); }
+    .insight {
+      margin-top: 12px; padding: 12px 14px; border-radius: 12px;
+      background: rgba(31,169,122,0.08); border: 1px solid rgba(31,169,122,0.18); font-size: 0.9rem;
+    }
+    .insight strong { text-transform: capitalize; }
+    .matrix-fit-note { margin-top: 8px; font-family: "IBM Plex Mono", monospace; font-size: 0.65rem; color: var(--muted); }
+
+    /* Race */
+    .race-toolbar {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+      padding: 12px 14px; border-bottom: 1px solid var(--line);
+    }
+    .race-toolbar button.icon {
+      border: 1px solid var(--line); background: var(--ink); color: var(--lime);
+      font-family: inherit; font-weight: 700; padding: 10px 14px; border-radius: 999px; cursor: pointer; min-width: 84px;
+    }
+    .race-toolbar button.icon.secondary { background: rgba(255,255,255,0.75); color: var(--ink); }
+    .race-month { font-family: "IBM Plex Mono", monospace; font-weight: 600; min-width: 84px; }
+    .race-slider { flex: 1; min-width: 120px; accent-color: var(--mint-deep); }
+    .race-area {
+      position: relative; padding: 16px 16px 18px;
+      height: calc(9 * (var(--race-row-h) + var(--race-gap)) + 8px);
+    }
+    .race-row {
+      position: absolute; left: 16px; right: 16px; height: var(--race-row-h);
+      display: grid; grid-template-columns: 26px 84px 1fr 64px; gap: 8px; align-items: center;
+      transition: transform 0.45s cubic-bezier(0.33,1,0.68,1);
+    }
+    .race-rank { font-family: "IBM Plex Mono", monospace; font-weight: 600; font-size: 0.82rem; color: var(--muted); text-align: right; }
+    .race-rank.top { color: var(--mint-deep); }
+    .race-name { font-weight: 700; text-transform: capitalize; white-space: nowrap; font-size: 0.95rem; }
+    .race-track { height: 24px; background: rgba(12,31,26,0.06); border-radius: 8px; overflow: hidden; }
+    .race-bar { height: 100%; width: 0; border-radius: 8px; transition: width 0.45s cubic-bezier(0.33,1,0.68,1); }
+    .race-val { font-family: "IBM Plex Mono", monospace; font-weight: 600; font-size: 0.85rem; text-align: right; }
+    .race-caption { padding: 0 16px 14px; font-size: 0.82rem; color: var(--muted); }
+
+    /* Heat */
+    .heat-wrap { overflow-x: auto; padding: 14px; }
+    .heat-grid {
+      display: grid; grid-template-columns: 40px repeat(24, minmax(16px,1fr));
+      gap: 2px; min-width: 640px;
+    }
+    .heat-cell, .heat-h, .heat-r {
+      min-height: 26px; border-radius: 4px; font-family: "IBM Plex Mono", monospace; font-size: 0.6rem;
+      display: flex; align-items: center; justify-content: center; color: var(--muted);
+    }
+    .heat-cell { min-height: 30px; }
+    .heat-peak {
+      margin-top: 12px; display: flex; flex-wrap: wrap; gap: 10px 16px;
+      font-family: "IBM Plex Mono", monospace; font-size: 0.74rem; color: var(--muted);
+    }
+    .heat-peak strong { color: var(--ink); }
+
+    /* HOF */
+    .hof-card {
+      margin: 12px; border: 1px solid var(--line); border-radius: 16px;
+      background: linear-gradient(165deg, rgba(255,255,255,0.9), rgba(243,247,242,0.95)); overflow: hidden;
+    }
+    .hof-main { display: grid; grid-template-columns: 56px 1fr; gap: 4px 12px; padding: 14px; }
+    .hof-rank { font-family: "IBM Plex Mono", monospace; font-weight: 700; text-align: center; color: var(--muted); }
+    .hof-rank.top { color: var(--mint-deep); }
+    .hof-laughs {
+      margin-top: 6px; text-align: center; font-family: "IBM Plex Mono", monospace; font-size: 0.68rem; font-weight: 600;
+      color: var(--mint-deep); background: rgba(31,169,122,0.12); border-radius: 999px; padding: 3px 5px;
+    }
+    .hof-meta { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-bottom: 6px; }
+    .hof-author { font-weight: 800; text-transform: capitalize; }
+    .hof-date { font-family: "IBM Plex Mono", monospace; font-size: 0.7rem; color: var(--muted); }
+    .hof-text { font-size: 1.02rem; line-height: 1.45; white-space: pre-wrap; word-break: break-word; }
+    .hof-text.placeholder { color: var(--muted); font-style: italic; }
+    .hof-media { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .hof-media img, .hof-media video {
+      max-width: min(100%, 340px); max-height: 280px; border-radius: 12px; object-fit: contain;
+      border: 1px solid var(--line); background: rgba(12,31,26,0.04);
+    }
+    .media-missing {
+      font-family: "IBM Plex Mono", monospace; font-size: 0.7rem; color: var(--muted);
+      padding: 10px 12px; border-radius: 10px; border: 1px dashed var(--line); max-width: 340px;
+    }
+    .hof-reactors { margin-top: 8px; font-family: "IBM Plex Mono", monospace; font-size: 0.68rem; color: var(--muted); }
+    .hof-reactors strong { color: var(--ink); text-transform: capitalize; }
+    .ctx-toggle {
+      grid-column: 1 / -1; margin-top: 6px; border: 0; background: transparent;
+      font-family: inherit; font-weight: 700; font-size: 0.86rem; color: var(--mint-deep);
+      cursor: pointer; text-align: left; padding: 4px 0;
+    }
+    .ctx-thread { display: none; border-top: 1px solid var(--line); background: rgba(12,31,26,0.02); padding: 12px 14px 14px 56px; }
+    .ctx-thread.open { display: block; }
+    .ctx-label { font-family: "IBM Plex Mono", monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 10px; }
+    .ctx-rail { padding-left: 12px; border-left: 2px solid rgba(31,169,122,0.28); }
+    .ctx-bubble {
+      position: relative; margin-bottom: 8px; padding: 9px 11px; border-radius: 12px 12px 12px 4px;
+      background: rgba(255,255,255,0.75); border: 1px solid var(--line); max-width: 52ch;
+    }
+    .ctx-bubble.punch {
+      background: linear-gradient(135deg, rgba(200,240,77,0.35), rgba(31,169,122,0.12));
+      border-color: rgba(31,169,122,0.35);
+    }
+    .ctx-bubble .who { font-size: 0.76rem; font-weight: 800; text-transform: capitalize; margin-bottom: 2px; }
+    .ctx-bubble .body { font-size: 0.92rem; line-height: 1.4; white-space: pre-wrap; word-break: break-word; }
+    .ctx-bubble .body.ph { color: var(--muted); font-style: italic; }
+    .ctx-bubble .when { margin-top: 3px; font-family: "IBM Plex Mono", monospace; font-size: 0.62rem; color: var(--muted); }
+    .ctx-bubble.punch::before {
+      content: "punchline"; position: absolute; top: -8px; right: 8px;
+      font-family: "IBM Plex Mono", monospace; font-size: 0.58rem; font-weight: 600; text-transform: uppercase;
+      background: var(--ink); color: var(--lime); padding: 2px 6px; border-radius: 999px;
+    }
+    .funny-laughs {
+      font-family: "IBM Plex Mono", monospace; font-size: 0.68rem; font-weight: 600;
+      color: var(--mint-deep); background: rgba(31,169,122,0.12); border-radius: 999px; padding: 3px 6px;
+    }
+    .funny-meta { display: flex; flex-wrap: wrap; gap: 6px 10px; margin-bottom: 4px; }
+    .funny-author { font-weight: 800; text-transform: capitalize; }
+    .funny-date { font-family: "IBM Plex Mono", monospace; font-size: 0.7rem; color: var(--muted); }
+    .funny-text { word-break: break-word; }
+    footer { margin-top: 28px; text-align: center; font-family: "IBM Plex Mono", monospace; font-size: 0.7rem; color: var(--muted); }
+
+    .dropzone {
+      margin: 8px 0 22px; border: 2px dashed rgba(12,31,26,0.22); border-radius: 18px;
+      background: rgba(255,255,255,0.55); padding: 28px 18px; text-align: center;
+      transition: border-color .15s, background .15s, transform .15s;
+    }
+    .dropzone.drag {
+      border-color: var(--mint-deep); background: rgba(31,169,122,0.10); transform: translateY(-1px);
+    }
+    .dropzone h2 { margin: 0 0 8px; font-size: 1.25rem; }
+    .dropzone p { margin: 0 0 6px; color: var(--muted); }
+    .dropzone code {
+      font-family: "IBM Plex Mono", monospace; font-size: 0.92em;
+      background: rgba(12,31,26,0.06); padding: 1px 6px; border-radius: 6px;
+    }
+    .drop-hint { font-size: 0.9rem; }
+    button.linkish {
+      background: none; border: none; color: var(--mint-deep); font: inherit;
+      font-weight: 700; text-decoration: underline; cursor: pointer; padding: 0;
+    }
+    .app-hidden { display: none; }
+    .app-visible { display: block; }
+    .dropzone.loaded { display: none; }
+    .reload-bar { margin: 0 0 14px; text-align: right; }
+    .reload-bar button {
+      font-family: "IBM Plex Mono", monospace; font-size: 0.72rem; font-weight: 600;
+      border: 1px solid var(--line); background: #fff; border-radius: 999px;
+      padding: 6px 10px; cursor: pointer; color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand" id="brand">Laugh Board</div>
+      <p class="tagline">Haha rankings from your iMessage group chat — all on your Mac.</p>
+      <div class="meta-row" id="meta"></div>
+    </header>
+
+    <section id="dropzone" class="dropzone">
+      <div class="dropzone-inner">
+        <h2>Drop <code>laugh-data.json</code> here</h2>
+        <p>Nothing is uploaded. The file stays in your browser only.</p>
+        <p class="drop-hint">Or click to choose a file · try <button type="button" id="load-sample" class="linkish">sample-data.json</button></p>
+        <input type="file" id="file-input" accept=".json,application/json" hidden />
+      </div>
+    </section>
+
+    <div id="app" class="app-hidden">
+    <div class="reload-bar"><button type="button" id="load-another">Load a different file</button></div>
+    <nav class="tabs" id="tabs">
+      <button type="button" data-panel="board" class="active">Rankings</button>
+      <button type="button" data-panel="matrix">Who → Whom</button>
+      <button type="button" data-panel="race">Bar Race</button>
+      <button type="button" data-panel="heat">When hours</button>
+      <button type="button" data-panel="funniest">Funniest</button>
+      <button type="button" data-panel="clips">Clips</button>
+    </nav>
+
+    <section class="panel active" id="panel-board">
+      <div class="controls">
+        <div class="seg" id="window-seg"></div>
+        <div class="seg metric" id="metric-seg">
+          <button type="button" data-metric="laughs_received" class="active">Received</button>
+          <button type="button" data-metric="laughs_given">Given</button>
+          <button type="button" data-metric="laughs_per_message">Per message</button>
+          <button type="button" data-metric="laughs_per_1k_chars">Per 1k chars</button>
+        </div>
+      </div>
+      <div class="podium" id="podium"></div>
+      <div class="panel-card">
+        <div class="board-head"><div>#</div><div>Person</div><div>Relative</div><div style="text-align:right">Value</div></div>
+        <div id="rows"></div>
+      </div>
+      <div class="stats" id="stats"></div>
+    </section>
+
+    <section class="panel" id="panel-matrix">
+      <div class="section-title">Who laughs at whom</div>
+      <p class="section-sub">Rows = who laughed · columns = who got the Haha.</p>
+      <div class="controls"><div class="seg" id="matrix-window-seg"></div></div>
+      <div class="panel-card">
+        <div class="matrix-card-inner">
+          <div class="matrix-legend-names" id="matrix-name-legend"></div>
+          <div class="matrix-stage"><div class="matrix-scale-wrap"><div class="matrix-grid" id="matrix-grid"></div></div></div>
+          <div class="matrix-scale-bar"><span>fewer</span><div class="legend-bar"></div><span>more</span></div>
+          <div class="insight" id="matrix-insight"></div>
+          <p class="matrix-fit-note" id="matrix-fit-note"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-race">
+      <div class="section-title">Cumulative bar race</div>
+      <p class="section-sub">Month-by-month tallies and rates. Bars and ranks move continuously.</p>
+      <div class="controls">
+        <div class="seg metric" id="race-metric-seg">
+          <button type="button" data-race="received" class="active">Received</button>
+          <button type="button" data-race="given">Given</button>
+          <button type="button" data-race="per_message">Per message</button>
+          <button type="button" data-race="per_1k_chars">Per 1k chars</button>
+        </div>
+      </div>
+      <div class="panel-card">
+        <div class="race-toolbar">
+          <button type="button" class="icon" id="race-play">Play</button>
+          <button type="button" class="icon secondary" id="race-reset">Reset</button>
+          <span class="race-month" id="race-month">—</span>
+          <input type="range" class="race-slider" id="race-slider" min="0" max="42" value="0" />
+        </div>
+        <div class="race-area" id="race-area"></div>
+        <p class="race-caption" id="race-caption"></p>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-heat">
+      <div class="section-title">When the laughs land</div>
+      <p class="section-sub">Haha reacts by day × hour in Eastern Time (EST).</p>
+      <div class="controls"><div class="seg" id="heat-window-seg"></div></div>
+      <div class="panel-card"><div class="heat-wrap"><div class="heat-grid" id="heat-grid"></div><div class="heat-peak" id="heat-peak"></div></div></div>
+    </section>
+
+    <section class="panel" id="panel-funniest">
+      <div class="section-title">Hall of fame</div>
+      <p class="section-sub">Highest Haha count on a single message. Expand setup for the texts before the punchline.</p>
+      <div class="controls"><div class="seg" id="funniest-window-seg"></div></div>
+      <div class="panel-card"><div id="funniest-list"></div></div>
+    </section>
+
+    <section class="panel" id="panel-clips">
+      <div class="section-title">Clip drops</div>
+      <p class="section-sub">TikTok / IG Reels / YT Shorts. Rank by Hahas on those links, drops sent, or per clip.</p>
+      <div class="controls">
+        <div class="seg" id="clips-window-seg"></div>
+        <div class="seg metric" id="clips-kind-seg">
+          <button type="button" data-clips="combined" class="active">All clips</button>
+          <button type="button" data-clips="tiktok">TikTok</button>
+          <button type="button" data-clips="instagram_reels">IG Reels</button>
+          <button type="button" data-clips="youtube_shorts">YT Shorts</button>
+        </div>
+        <div class="seg metric" id="clips-metric-seg">
+          <button type="button" data-clips-metric="laughs_on_clips" class="active">Hahas on clips</button>
+          <button type="button" data-clips-metric="clips_sent">Drops sent</button>
+          <button type="button" data-clips-metric="laughs_per_clip">Per clip</button>
+        </div>
+      </div>
+      <div class="podium" id="clips-podium"></div>
+      <div class="panel-card">
+        <div class="board-head"><div>#</div><div>Person</div><div>Relative</div><div style="text-align:right">Value</div></div>
+        <div id="clips-rows"></div>
+      </div>
+      <div class="stats" id="clips-stats"></div>
+      <div class="section-title" style="margin-top:20px">Funniest clip drops</div>
+      <p class="section-sub">Individual links with the most Hahas.</p>
+      <div class="panel-card"><div id="clips-top"></div></div>
+    </section>
+
+    <footer id="footer"></footer>
+    </div>
+  </div>
+
+  <script>
+    let DATA = null;
+    let PEOPLE = [];
+    let COLORS = {};
+    let MATRIX_SHORT = {};
+
+    const PALETTE = [
+      "#1fa97a","#ff6b4a","#3b82f6","#a855f7","#f0b429",
+      "#14b8a6","#0d7a56","#7ec8ff","#e11d48","#f97316",
+      "#6366f1","#06b6d4","#84cc16","#d946ef","#0ea5e9",
+    ];
+
+    function shortCode(name) {
+      const clean = String(name).replace(/[^A-Za-z0-9]/g, "");
+      if (clean.length >= 3) return clean.slice(0,3).toUpperCase();
+      return (String(name).slice(0,3) || "?").toUpperCase();
+    }
+    function buildIdentity(people) {
+      PEOPLE = [...people];
+      COLORS = {};
+      MATRIX_SHORT = {};
+      const used = new Set();
+      people.forEach((p, i) => {
+        COLORS[p] = PALETTE[i % PALETTE.length];
+        let code = shortCode(p);
+        let n = 2;
+        while (used.has(code)) {
+          code = (shortCode(p).slice(0, 2) + String(n)).slice(0, 3).toUpperCase();
+          n += 1;
+        }
+        used.add(code);
+        MATRIX_SHORT[p] = code;
+      });
+    }
+    const DOW = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+    const WINDOWS = [
+      { key:"all_time", label:"All time" },
+      { key:"last_year", label:"Last 365 days" },
+      { key:"last_30", label:"Last 30 days" },
+    ];
+
+    let windowKey = "all_time";
+    let metricKey = "laughs_received";
+    let matrixWindow = "all_time";
+    let heatWindow = "all_time";
+    let funniestWindow = "all_time";
+    let clipsWindow = "all_time";
+    let clipsKind = "combined";
+    let clipsMetric = "laughs_on_clips";
+    let raceKind = "received";
+    let raceFrame = 0;
+    let raceTimer = null;
+    let racePlaying = false;
+    let raceBuilt = false;
+
+    const METRIC_META = {
+      laughs_received: {
+        label: "Laughs received",
+        format: (n) => n.toLocaleString(),
+        valueHint: (p) => `${p.messages_sent.toLocaleString()} msgs · ${fmtChars(p.characters_sent||0)} chars`,
+        value: (p) => p.laughs_received,
+      },
+      laughs_given: {
+        label: "Laughs given",
+        format: (n) => n.toLocaleString(),
+        valueHint: (p) => `${p.messages_sent.toLocaleString()} msgs`,
+        value: (p) => p.laughs_given,
+      },
+      laughs_per_message: {
+        label: "Laughs / message",
+        format: (n) => Number(n).toFixed(3),
+        valueHint: (p) => `${p.laughs_received} on ${p.messages_sent} msgs`,
+        value: (p) => p.laughs_per_message,
+      },
+      laughs_per_1k_chars: {
+        label: "Laughs / 1k chars",
+        format: (n) => Number(n).toFixed(2),
+        valueHint: (p) => `${p.laughs_received} on ${fmtChars(p.characters_sent||0)} chars`,
+        value: (p) => p.laughs_per_1k_chars,
+      },
+    };
+
+    function fmtChars(n) { return n >= 1000 ? (n/1000).toFixed(1)+"k" : String(n); }
+    function fmtDate(iso) {
+      if (!iso) return "—";
+      return new Date(iso).toLocaleDateString(undefined, { year:"numeric", month:"short", day:"numeric" });
+    }
+    function fmtTime(iso) {
+      if (!iso) return "";
+      return new Date(iso).toLocaleString(undefined, { month:"short", day:"numeric", hour:"numeric", minute:"2-digit" });
+    }
+    function escapeHtml(s) {
+      return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    }
+    function fillWindowSeg(id, active) {
+      document.getElementById(id).innerHTML = WINDOWS.map((w) =>
+        `<button type="button" data-window="${w.key}" class="${w.key===active?"active":""}">${w.label}</button>`
+      ).join("");
+    }
+    function wireSeg(id, attr, cb) {
+      document.getElementById(id).addEventListener("click", (e) => {
+        const btn = e.target.closest(`button[${attr}]`);
+        if (!btn) return;
+        document.querySelectorAll(`#${id} button`).forEach((b) => b.classList.toggle("active", b === btn));
+        cb(btn.getAttribute(attr));
+      });
+    }
+    function ranked(people) {
+      return [...people].sort((a,b) => {
+        const d = METRIC_META[metricKey].value(b) - METRIC_META[metricKey].value(a);
+        return d !== 0 ? d : a.person.localeCompare(b.person);
+      });
+    }
+    function heatColor(t) {
+      const r = Math.round(238 + (13-238)*t);
+      const g = Math.round(246 + (122-246)*t);
+      const b = Math.round(236 + (86-236)*t);
+      return { bg:`rgb(${r},${g},${b})`, text: t > 0.55 ? "#fff" : "var(--ink)" };
+    }
+    function animateBars(container) {
+      requestAnimationFrame(() => {
+        container.querySelectorAll(".bar-fill").forEach((el) => {
+          el.style.width = "0%";
+          requestAnimationFrame(() => { el.style.width = el.dataset.pct + "%"; });
+        });
+      });
+    }
+    function renderPodium(el, people, format, sub) {
+      const top = people.slice(0,3);
+      const order = [top[1], top[0], top[2]];
+      const classes = ["p2","p1","p3"];
+      el.innerHTML = order.map((p,i) => {
+        if (!p) return "";
+        const place = i===0?2:i===1?1:3;
+        return `<div class="podium-card ${classes[i]}">
+          <div class="medal">${place}</div>
+          <div class="podium-name">${p.person}</div>
+          <div class="podium-score">${format(p)}</div>
+          <div class="podium-sub">${sub}</div>
+        </div>`;
+      }).join("");
+    }
+
+    function renderMeta() {
+      const w = DATA.window[windowKey];
+      document.getElementById("meta").innerHTML = `
+        <span><strong>${w.label}</strong> · ${fmtDate(w.from)} → ${fmtDate(w.to)}</span>
+        <span><strong>${w.total_messages.toLocaleString()}</strong> messages</span>
+        <span><strong>${w.total_laughs.toLocaleString()}</strong> Hahas</span>
+        <span><strong>${DATA.chats_included}</strong> threads</span>`;
+    }
+
+    function renderBoard() {
+      const meta = METRIC_META[metricKey];
+      const people = ranked(DATA.window[windowKey].people);
+      const max = Math.max(...people.map((p) => meta.value(p)), 0.0001);
+      renderPodium(document.getElementById("podium"), people, (p) => meta.format(meta.value(p)), meta.label);
+      const container = document.getElementById("rows");
+      container.innerHTML = people.map((p,i) => `
+        <div class="row" data-i="${i}">
+          <div class="rank ${i<3?"top":""}">${i+1}</div>
+          <div class="name">${p.person}</div>
+          <div class="bar-cell">
+            <div class="bar-track"><div class="bar-fill" data-pct="${(meta.value(p)/max)*100}"></div></div>
+            <div class="bar-meta">${meta.valueHint(p)}</div>
+          </div>
+          <div class="score-cell">${meta.format(meta.value(p))}</div>
+        </div>`).join("");
+      animateBars(container);
+      const list = DATA.window[windowKey].people;
+      const topRate = [...list].sort((a,b)=>b.laughs_per_message-a.laughs_per_message)[0];
+      const topChars = [...list].sort((a,b)=>b.laughs_per_1k_chars-a.laughs_per_1k_chars)[0];
+      const topRecv = [...list].sort((a,b)=>b.laughs_received-a.laughs_received)[0];
+      document.getElementById("stats").innerHTML = `
+        <div class="stat"><div class="stat-label">Best per message</div><div class="stat-value">${topRate.person}</div>
+          <div class="bar-meta" style="margin-top:4px">${topRate.laughs_per_message.toFixed(3)} / msg</div></div>
+        <div class="stat"><div class="stat-label">Best per 1k chars</div><div class="stat-value">${topChars.person}</div>
+          <div class="bar-meta" style="margin-top:4px">${topChars.laughs_per_1k_chars.toFixed(2)} / 1k</div></div>
+        <div class="stat"><div class="stat-label">Most received</div><div class="stat-value">${topRecv.person}</div>
+          <div class="bar-meta" style="margin-top:4px">${topRecv.laughs_received.toLocaleString()} Hahas</div></div>`;
+    }
+
+    function renderMatrix() {
+      const grid = DATA.window[matrixWindow].matrix;
+      const max = Math.max(1, ...grid.flat());
+      document.getElementById("matrix-name-legend").innerHTML = PEOPLE.map((p) =>
+        `<div><strong>${MATRIX_SHORT[p]}</strong> ${p}</div>`
+      ).join("");
+      const stage = document.querySelector(".matrix-stage");
+      const avail = Math.max(280, (stage ? stage.clientWidth : window.innerWidth) - 8);
+      const gaps = 20;
+      const label = Math.max(22, Math.min(30, Math.floor(avail * 0.08)));
+      const n = Math.max(2, PEOPLE.length);
+      const cell = Math.max(18, Math.floor((avail - label - gaps) / n));
+      const el = document.getElementById("matrix-grid");
+      el.style.setProperty("--mx-label", label + "px");
+      el.style.setProperty("--mx-cell", cell + "px");
+      el.style.setProperty("--mx-n", String(n));
+      const numSize = cell >= 32 ? "0.68rem" : cell >= 28 ? "0.58rem" : "0.5rem";
+      const headSize = cell >= 32 ? "0.62rem" : "0.5rem";
+      let h = `<div class="corner">→</div>`;
+      PEOPLE.forEach((p) => { h += `<div class="col-h" style="font-size:${headSize}" title="${p}">${MATRIX_SHORT[p]}</div>`; });
+      grid.forEach((row, i) => {
+        h += `<div class="row-h" style="font-size:${headSize}" title="${PEOPLE[i]}">${MATRIX_SHORT[PEOPLE[i]]}</div>`;
+        row.forEach((v, j) => {
+          const t = Math.pow(v / max, 0.65);
+          const { bg, text } = heatColor(t);
+          const labelV = v === 0 ? "·" : (v >= 1000 ? (Math.round(v/100)/10)+"k" : String(v));
+          h += `<div class="cell ${i===j?"self":""}" style="background:${bg};color:${text};font-size:${numSize}" title="${PEOPLE[i]} → ${PEOPLE[j]}: ${v}">${labelV}</div>`;
+        });
+      });
+      el.innerHTML = h;
+      const edges = [];
+      grid.forEach((row,i) => row.forEach((v,j) => { if (i!==j) edges.push({v,i,j}); }));
+      edges.sort((a,b)=>b.v-a.v);
+      const topE = edges.slice(0,3);
+      let insight = "No Hahas in this window.";
+      if (topE.length) {
+        insight = `Hottest: <strong>${PEOPLE[topE[0].i]}</strong> → <strong>${PEOPLE[topE[0].j]}</strong> (${topE[0].v.toLocaleString()})`;
+        if (topE[1]) insight += `. Also ${PEOPLE[topE[1].i]}→${PEOPLE[topE[1].j]} (${topE[1].v})`;
+        if (topE[2]) insight += `, ${PEOPLE[topE[2].i]}→${PEOPLE[topE[2].j]} (${topE[2].v})`;
+        insight += ".";
+      }
+      document.getElementById("matrix-insight").innerHTML = insight;
+      document.getElementById("matrix-fit-note").textContent = `Fitted to ${avail}px · cell ${cell}px`;
+    }
+
+    function raceFrames() { return DATA.race[raceKind]; }
+    function raceRowStep() { return 48; }
+    function formatRaceValue(v) {
+      if (raceKind === "per_message") return Number(v).toFixed(3);
+      if (raceKind === "per_1k_chars") return Number(v).toFixed(2);
+      return Number(v).toLocaleString();
+    }
+    function ensureRaceDom() {
+      const area = document.getElementById("race-area");
+      if (raceBuilt && area.children.length === PEOPLE.length) return;
+      area.innerHTML = PEOPLE.map((p,i) => {
+        const color = COLORS[p];
+        return `<div class="race-row" data-person="${p}" style="transform:translateY(${i*raceRowStep()}px)">
+          <div class="race-rank">–</div>
+          <div class="race-name" style="color:${color}">${p}</div>
+          <div class="race-track"><div class="race-bar" style="background:${color}"></div></div>
+          <div class="race-val">0</div>
+        </div>`;
+      }).join("");
+      raceBuilt = true;
+    }
+    function renderRaceFrame(idx) {
+      ensureRaceDom();
+      const frames = raceFrames();
+      raceFrame = Math.max(0, Math.min(idx, frames.length-1));
+      const frame = frames[raceFrame];
+      document.getElementById("race-month").textContent = frame.month;
+      const slider = document.getElementById("race-slider");
+      slider.max = String(frames.length-1);
+      slider.value = String(raceFrame);
+      const vals = PEOPLE.map((p)=>({person:p, v: frame.values[p]||0}));
+      vals.sort((a,b)=>b.v-a.v || a.person.localeCompare(b.person));
+      const floor = (raceKind==="per_message"||raceKind==="per_1k_chars") ? 0.001 : 1;
+      const max = Math.max(...vals.map(x=>x.v), floor);
+      const rankOf = {};
+      vals.forEach((x,i)=>{ rankOf[x.person]=i; });
+      const area = document.getElementById("race-area");
+      PEOPLE.forEach((p) => {
+        const row = area.querySelector(`.race-row[data-person="${p}"]`);
+        const rank = rankOf[p];
+        const v = frame.values[p]||0;
+        row.style.transform = `translateY(${rank*raceRowStep()}px)`;
+        const rankEl = row.querySelector(".race-rank");
+        rankEl.textContent = String(rank+1);
+        rankEl.classList.toggle("top", rank<3);
+        const bar = row.querySelector(".race-bar");
+        void bar.offsetWidth;
+        bar.style.width = ((v/max)*100)+"%";
+        row.querySelector(".race-val").textContent = formatRaceValue(v);
+      });
+      const labels = {
+        received:"Hahas received (cumulative)", given:"Hahas given (cumulative)",
+        per_message:"laughs / message (running)", per_1k_chars:"laughs / 1k chars (running)",
+      };
+      document.getElementById("race-caption").textContent =
+        `${labels[raceKind]} · ${frame.month} · ${raceFrame+1}/${frames.length}`;
+    }
+    function stopRace() {
+      racePlaying = false;
+      if (raceTimer) { clearInterval(raceTimer); raceTimer = null; }
+      document.getElementById("race-play").textContent = "Play";
+    }
+    function playRace() {
+      if (racePlaying) { stopRace(); return; }
+      racePlaying = true;
+      document.getElementById("race-play").textContent = "Pause";
+      const frames = raceFrames();
+      if (raceFrame >= frames.length-1) {
+        const area = document.getElementById("race-area");
+        area.querySelectorAll(".race-row, .race-bar").forEach((el)=>{ el.style.transition="none"; });
+        raceFrame = 0; renderRaceFrame(0); void area.offsetWidth;
+        area.querySelectorAll(".race-row, .race-bar").forEach((el)=>{ el.style.transition=""; });
+      }
+      raceTimer = setInterval(() => {
+        if (raceFrame >= raceFrames().length-1) { renderRaceFrame(raceFrame); stopRace(); return; }
+        raceFrame += 1; renderRaceFrame(raceFrame);
+      }, 480);
+    }
+
+    function renderHeat() {
+      const grid = DATA.window[heatWindow].heatmap;
+      const max = Math.max(1, ...grid.flat());
+      let h = `<div class="heat-h"></div>`;
+      for (let hr=0; hr<24; hr++) h += `<div class="heat-h">${hr%3===0?hr:""}</div>`;
+      let peak={v:-1,d:0,h:0}, total=0;
+      grid.forEach((row,d) => {
+        h += `<div class="heat-r">${DOW[d]}</div>`;
+        row.forEach((v,hr) => {
+          total += v; if (v>peak.v) peak={v,d,h:hr};
+          const t = Math.pow(v/max, 0.55);
+          const r = Math.round(243+(13-243)*t), g=Math.round(247+(169-247)*t), b=Math.round(242+(122-242)*t);
+          h += `<div class="heat-cell" style="background:rgb(${r},${g},${b})" title="${DOW[d]} ${hr}:00 — ${v}"></div>`;
+        });
+      });
+      document.getElementById("heat-grid").innerHTML = h;
+      const byDay = grid.map((row,d)=>({d,v:row.reduce((a,b)=>a+b,0)})).sort((a,b)=>b.v-a.v);
+      const byHour = Array.from({length:24},(_,hr)=>({h:hr,v:grid.reduce((a,row)=>a+row[hr],0)})).sort((a,b)=>b.v-a.v);
+      const hourLabel = (hr) => `${((hr+11)%12)+1}${hr>=12?"pm":"am"}`;
+      document.getElementById("heat-peak").innerHTML = `
+        <span>Peak: <strong>${peak.v>0?DOW[peak.d]+" "+hourLabel(peak.h):"—"}</strong> (${peak.v})</span>
+        <span>Day: <strong>${byDay[0]?.v?DOW[byDay[0].d]:"—"}</strong></span>
+        <span>Hour: <strong>${byHour[0]?.v?hourLabel(byHour[0].h):"—"}</strong></span>
+        <span>Timezone: <strong>EST</strong></span>
+        <span>Total: <strong>${total.toLocaleString()}</strong></span>`;
+    }
+
+    function mediaHtml(media) {
+      if (!media || !media.length) return "";
+      return `<div class="hof-media">${media.map((m) => {
+        if (m.available && m.src && (m.kind==="image"||m.kind==="gif"))
+          return `<img src="${escapeHtml(m.src)}" alt="${escapeHtml(m.name||"image")}" loading="lazy" />`;
+        if (m.available && m.src && m.kind==="video")
+          return `<video controls preload="metadata" src="${escapeHtml(m.src)}"></video>`;
+        return `<div class="media-missing"><strong>${escapeHtml(m.name||"attachment")}</strong><br/>${escapeHtml(m.note||"unavailable")}</div>`;
+      }).join("")}</div>`;
+    }
+    function contextHtml(ctx, id) {
+      if (!ctx || ctx.length <= 1)
+        return `<button type="button" class="ctx-toggle" disabled>No setup thread found</button>`;
+      const setup = ctx.map((m) => `<div class="ctx-bubble ${m.is_punchline?"punch":""}">
+        <div class="who">${escapeHtml(m.author)}</div>
+        <div class="body ${m.placeholder?"ph":""}">${escapeHtml(m.text)}</div>
+        <div class="when">${fmtTime(m.date)}</div>
+      </div>`).join("");
+      return `<button type="button" class="ctx-toggle" data-ctx="${id}">Show setup · ${ctx.length-1} texts before →</button>
+        <div class="ctx-thread" id="ctx-${id}"><div class="ctx-label">The run-up</div><div class="ctx-rail">${setup}</div></div>`;
+    }
+    function renderFunniest() {
+      const list = DATA.window[funniestWindow].funniest || [];
+      const el = document.getElementById("funniest-list");
+      if (!list.length) { el.innerHTML = `<div style="padding:18px;color:var(--muted)">No multi-laugh hits.</div>`; return; }
+      el.innerHTML = list.map((m,i) => {
+        const reactors = (m.reactors||[]).map((r)=>`<strong>${escapeHtml(r.person)}</strong>${r.n>1?"×"+r.n:""}`).join(" · ");
+        const id = m.id || String(i);
+        return `<article class="hof-card"><div class="hof-main">
+          <div><div class="hof-rank ${i<3?"top":""}">${i+1}</div><div class="hof-laughs">${m.laughs} Hahas</div></div>
+          <div>
+            <div class="hof-meta"><span class="hof-author">${escapeHtml(m.author)}</span><span class="hof-date">${fmtDate(m.date)}</span></div>
+            <div class="hof-text ${m.placeholder?"placeholder":""}">${escapeHtml(m.text)}</div>
+            ${mediaHtml(m.media)}
+            ${reactors?`<div class="hof-reactors">laughed: ${reactors}</div>`:""}
+            ${contextHtml(m.context, id)}
+          </div>
+        </div></article>`;
+      }).join("");
+      el.querySelectorAll(".ctx-toggle[data-ctx]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const thr = document.getElementById("ctx-"+btn.getAttribute("data-ctx"));
+          const open = thr.classList.toggle("open");
+          btn.textContent = open ? "Hide setup ↑" : "Show setup · texts before →";
+        });
+      });
+    }
+
+    const CLIPS_LABEL = { combined:"All clips", tiktok:"TikTok", instagram_reels:"IG Reels", youtube_shorts:"YT Shorts" };
+    const CLIPS_METRIC_META = {
+      laughs_on_clips: {
+        label:"Hahas on clips", listKey:"by_laughs",
+        format:(p)=>String(p.laughs_on_clips),
+        hint:(p)=>`${p.clips_sent} drops · ${p.laughs_per_clip.toFixed(2)} / clip`,
+        value:(p)=>p.laughs_on_clips,
+      },
+      clips_sent: {
+        label:"Drops sent", listKey:"by_drops",
+        format:(p)=>String(p.clips_sent),
+        hint:(p)=>`${p.laughs_on_clips} Hahas on them`,
+        value:(p)=>p.clips_sent,
+      },
+      laughs_per_clip: {
+        label:"Hahas / clip", listKey:"by_rate",
+        format:(p)=>p.laughs_per_clip.toFixed(2),
+        hint:(p)=>`${p.laughs_on_clips} Hahas · ${p.clips_sent} drops`,
+        value:(p)=>p.laughs_per_clip,
+      },
+    };
+    function renderClips() {
+      const root = DATA.window[clipsWindow].clips || {};
+      const block = root[clipsKind];
+      if (!block || !block.by_laughs) {
+        document.getElementById("clips-rows").innerHTML = `<div style="padding:18px;color:var(--muted)">No clip data.</div>`;
+        return;
+      }
+      const meta = CLIPS_METRIC_META[clipsMetric];
+      const people = [...block[meta.listKey]];
+      const max = Math.max(...people.map((p)=>meta.value(p)), clipsMetric==="laughs_per_clip"?0.001:1);
+      renderPodium(document.getElementById("clips-podium"), people, (p)=>meta.format(p), `${meta.label} · ${CLIPS_LABEL[clipsKind]}`);
+      const container = document.getElementById("clips-rows");
+      container.innerHTML = people.map((p,i)=>`
+        <div class="row" data-i="${i}">
+          <div class="rank ${i<3?"top":""}">${i+1}</div>
+          <div class="name">${p.person}</div>
+          <div class="bar-cell">
+            <div class="bar-track"><div class="bar-fill" data-pct="${(meta.value(p)/max)*100}"></div></div>
+            <div class="bar-meta">${meta.hint(p)}</div>
+          </div>
+          <div class="score-cell">${meta.format(p)}</div>
+        </div>`).join("");
+      animateBars(container);
+      const bestLaughs = block.by_laughs[0], bestDrops = block.by_drops[0];
+      const bestRate = block.by_rate.find((p)=>p.clips_sent>0) || block.by_rate[0];
+      document.getElementById("clips-stats").innerHTML = `
+        <div class="stat"><div class="stat-label">Most Hahas on clips</div><div class="stat-value">${bestLaughs?.person||"—"}</div>
+          <div class="bar-meta" style="margin-top:4px">${bestLaughs?bestLaughs.laughs_on_clips+" Hahas · "+bestLaughs.clips_sent+" drops":""}</div></div>
+        <div class="stat"><div class="stat-label">Most drops</div><div class="stat-value">${bestDrops?.person||"—"}</div>
+          <div class="bar-meta" style="margin-top:4px">${bestDrops?bestDrops.clips_sent+" links":""}</div></div>
+        <div class="stat"><div class="stat-label">Best per clip</div><div class="stat-value">${bestRate?.person||"—"}</div>
+          <div class="bar-meta" style="margin-top:4px">${bestRate?bestRate.laughs_per_clip.toFixed(2)+" / clip":""}</div></div>`;
+      const topClips = root.top_clips || [];
+      const topEl = document.getElementById("clips-top");
+      topEl.innerHTML = topClips.length ? topClips.map((c,i) => {
+        const kinds = (c.kinds||[]).map((k)=>CLIPS_LABEL[k]||k).join(" · ");
+        return `<div style="display:grid;grid-template-columns:52px 1fr;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)">
+          <div style="text-align:center"><div class="rank ${i<3?"top":""}">${i+1}</div>
+            <div class="funny-laughs" style="margin-top:6px;display:inline-block">${c.laughs} Hahas</div></div>
+          <div><div class="funny-meta"><span class="funny-author">${escapeHtml(c.author)}</span>
+            <span class="funny-date">${fmtDate(c.date)} · ${escapeHtml(kinds)}</span></div>
+            <div class="funny-text" style="word-break:break-all">${escapeHtml(c.text)}</div></div>
+        </div>`;
+      }).join("") : `<div style="padding:18px;color:var(--muted)">No clip earned a Haha in this window.</div>`;
+    }
+
+
+    function validateData(d) {
+      if (!d || !d.window || !d.people || !d.race) throw new Error("Not a Laugh Board export (missing window/people/race).");
+      for (const k of ["all_time","last_year","last_30"]) {
+        if (!d.window[k]) throw new Error("Missing window." + k);
+      }
+    }
+
+    function bindOnce() {
+      if (window.__laughBound) return;
+      window.__laughBound = true;
+      document.getElementById("tabs").addEventListener("click", (e) => {
+        const btn = e.target.closest("button[data-panel]");
+        if (!btn) return;
+        const panel = btn.dataset.panel;
+        document.querySelectorAll("#tabs button").forEach((b)=>b.classList.toggle("active", b===btn));
+        document.querySelectorAll(".panel").forEach((p)=>p.classList.toggle("active", p.id==="panel-"+panel));
+        if (panel==="board") { renderMeta(); renderBoard(); }
+        if (panel==="matrix") renderMatrix();
+        if (panel==="race") renderRaceFrame(raceFrame);
+        if (panel==="heat") renderHeat();
+        if (panel==="funniest") renderFunniest();
+        if (panel==="clips") renderClips();
+      });
+      wireSeg("window-seg","data-window",(w)=>{ windowKey=w; renderMeta(); renderBoard(); });
+      wireSeg("metric-seg","data-metric",(m)=>{ metricKey=m; renderBoard(); });
+      wireSeg("matrix-window-seg","data-window",(w)=>{ matrixWindow=w; renderMatrix(); });
+      wireSeg("heat-window-seg","data-window",(w)=>{ heatWindow=w; renderHeat(); });
+      wireSeg("funniest-window-seg","data-window",(w)=>{ funniestWindow=w; renderFunniest(); });
+      wireSeg("clips-window-seg","data-window",(w)=>{ clipsWindow=w; renderClips(); });
+      wireSeg("clips-kind-seg","data-clips",(k)=>{ clipsKind=k; renderClips(); });
+      wireSeg("clips-metric-seg","data-clips-metric",(k)=>{ clipsMetric=k; renderClips(); });
+      wireSeg("race-metric-seg","data-race",(k)=>{ raceKind=k; stopRace(); renderRaceFrame(raceFrame); });
+      document.getElementById("race-play").addEventListener("click", playRace);
+      document.getElementById("race-reset").addEventListener("click", () => {
+        stopRace();
+        const area = document.getElementById("race-area");
+        area.querySelectorAll(".race-row, .race-bar").forEach((el)=>{ el.style.transition="none"; });
+        raceFrame=0; renderRaceFrame(0); void area.offsetWidth;
+        area.querySelectorAll(".race-row, .race-bar").forEach((el)=>{ el.style.transition=""; });
+      });
+      document.getElementById("race-slider").addEventListener("input", (e) => {
+        stopRace(); renderRaceFrame(Number(e.target.value));
+      });
+      window.addEventListener("resize", () => {
+        const panel = document.getElementById("panel-matrix");
+        if (panel && panel.classList.contains("active")) renderMatrix();
+      });
+    }
+
+    function boot(data) {
+      validateData(data);
+      DATA = data;
+      buildIdentity(DATA.people);
+      raceBuilt = false;
+      raceFrame = 0;
+      stopRace();
+      document.getElementById("brand").textContent = DATA.chat_name || "Laugh Board";
+      document.getElementById("dropzone").classList.add("loaded");
+      const app = document.getElementById("app");
+      app.classList.remove("app-hidden");
+      app.classList.add("app-visible");
+      fillWindowSeg("window-seg", windowKey);
+      fillWindowSeg("matrix-window-seg", matrixWindow);
+      fillWindowSeg("heat-window-seg", heatWindow);
+      fillWindowSeg("funniest-window-seg", funniestWindow);
+      fillWindowSeg("clips-window-seg", clipsWindow);
+      bindOnce();
+      document.getElementById("footer").textContent =
+        `Generated ${fmtDate(DATA.generated_at)} · ${DATA.chat_name || "Laugh Board"} · stays on your Mac`;
+      renderMeta();
+      renderBoard();
+      renderMatrix();
+      ensureRaceDom();
+      renderRaceFrame(0);
+      renderHeat();
+      renderFunniest();
+      renderClips();
+    }
+
+    function resetToDrop() {
+      stopRace();
+      DATA = null;
+      document.getElementById("dropzone").classList.remove("loaded");
+      const app = document.getElementById("app");
+      app.classList.add("app-hidden");
+      app.classList.remove("app-visible");
+      document.getElementById("brand").textContent = "Laugh Board";
+      document.getElementById("meta").innerHTML = "";
+      document.getElementById("footer").textContent = "";
+    }
+
+    function handleFile(file) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          boot(JSON.parse(reader.result));
+        } catch (err) {
+          alert("Could not read that file.\\n" + (err && err.message ? err.message : err));
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    const dz = document.getElementById("dropzone");
+    const input = document.getElementById("file-input");
+    dz.addEventListener("click", (e) => {
+      if (e.target && e.target.id === "load-sample") return;
+      input.click();
+    });
+    input.addEventListener("change", () => handleFile(input.files[0]));
+    ;["dragenter","dragover"].forEach((ev) => dz.addEventListener(ev, (e) => {
+      e.preventDefault(); e.stopPropagation(); dz.classList.add("drag");
+    }));
+    ;["dragleave","drop"].forEach((ev) => dz.addEventListener(ev, (e) => {
+      e.preventDefault(); e.stopPropagation(); dz.classList.remove("drag");
+    }));
+    dz.addEventListener("drop", (e) => {
+      const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      handleFile(f);
+    });
+    document.getElementById("load-sample").addEventListener("click", async (e) => {
+      e.preventDefault(); e.stopPropagation();
+      try {
+        const res = await fetch("sample-data.json");
+        if (!res.ok) throw new Error("sample-data.json not found next to index.html");
+        boot(await res.json());
+      } catch (err) {
+        alert("Open this folder via a local server, or drop sample-data.json manually.\\n" +
+              "Quick server: python3 -m http.server 8765\\nThen open http://localhost:8765\\n\\n" +
+              (err && err.message ? err.message : err));
+      }
+    });
+    document.getElementById("load-another").addEventListener("click", resetToDrop);
+
+    // Auto-load laugh-data.json if present beside index.html (file:// may block; http.server works)
+    fetch("laugh-data.json").then(async (res) => {
+      if (!res.ok) return;
+      try { boot(await res.json()); } catch (_) {}
+    }).catch(() => {});
+
+  </script>
+</body>
+</html>
